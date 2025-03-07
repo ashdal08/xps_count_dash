@@ -15,8 +15,8 @@ import plotly.io as pio
 from gevent.pywsgi import WSGIServer
 import waitress
 
-# import u6
-from dependencies import dummy_labjack_u6 as u6
+import u6
+# from dependencies import dummy_labjack_u6 as u6
 
 from dash import (
     Dash,

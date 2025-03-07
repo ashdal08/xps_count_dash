@@ -2,11 +2,9 @@ dash
 dash_bootstrap_components
 dash_bootstrap_templates
 gevent
+LabJackPython
 numpy
 pandas
 plotly
 polars
-pywinstyles
-shared_memory_dict
 waitress
-wxPython
