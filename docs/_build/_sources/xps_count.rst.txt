@@ -1,0 +1,17 @@
+.. :tocdepth: 2
+
+Main Program Window
+===================
+
+
+
+.. automodule:: main
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Source Code
+-----------
+
+.. literalinclude:: ../src/main.py
+   :linenos:

@@ -1,0 +1,16 @@
+Plot Server
+===========
+
+The dash app
+------------
+
+.. automodule:: plot_dash_client_copy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Source Code
+-----------
+
+.. literalinclude:: ../src/dependencies/plot_dash_client_copy.py
+   :linenos:

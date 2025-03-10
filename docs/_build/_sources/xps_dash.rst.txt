@@ -1,0 +1,17 @@
+.. :tocdepth: 2
+
+XPS Dash : An alternate dash app with modern UI
+===============================================
+
+
+
+.. automodule:: xps_dash
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Source Code
+-----------
+
+.. literalinclude:: ../src/xps_dash.py
+   :linenos:

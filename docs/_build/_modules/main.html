@@ -1,0 +1,1324 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>main - XPS Count 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/./furo_mod.css?v=51d201ec" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">XPS Count 0.1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="content-icon-container">
+    <div class="theme-toggle-container theme-toggle-content">
+      <button class="theme-toggle">
+        <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <svg class="theme-icon-when-auto-light">
+          <use href="#svg-sun-with-moon"></use>
+        </svg>
+        <svg class="theme-icon-when-auto-dark">
+          <use href="#svg-moon-with-sun"></use>
+        </svg>
+        <svg class="theme-icon-when-dark">
+          <use href="#svg-moon"></use>
+        </svg>
+        <svg class="theme-icon-when-light">
+          <use href="#svg-sun"></use>
+        </svg>
+      </button>
+    </div>
+  </div><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">XPS Count 0.1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../xps_dash.html">XPS Dash : An alternate dash app with modern UI</a></li>
+</ul>
+
+</div></div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for main</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dependencies</span><span class="w"> </span><span class="kn">import</span> <span class="n">mainframe</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">wx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pywinstyles</span>
+
+<span class="c1"># import u6</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dependencies</span><span class="w"> </span><span class="kn">import</span> <span class="n">dummy_labjack_u6</span> <span class="k">as</span> <span class="n">u6</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+
+<span class="c1"># import LabJackPython as ljud</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+
+<span class="c1"># Library to plot the data, during (live) and after measurement</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">plotly.graph_objects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">go</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">plotly.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dash_bootstrap_templates</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_figure_template</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">shared_memory_dict</span><span class="w"> </span><span class="kn">import</span> <span class="n">SharedMemoryDict</span>
+
+<span class="c1"># **************************************************************************</span>
+
+<span class="n">load_figure_template</span><span class="p">([</span><span class="s2">&quot;bootstrap&quot;</span><span class="p">])</span>
+
+<span class="n">BOOTSTRAP</span> <span class="o">=</span> <span class="n">pio</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="s2">&quot;bootstrap&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Bootstrap template for the plotly figure.&quot;&quot;&quot;</span>
+
+<span class="n">CONFIG</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span>
+    <span class="s2">&quot;scrollZoom&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;displaylogo&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;toImageButtonOptions&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;svg&quot;</span><span class="p">,</span>  <span class="c1"># one of png, svg, jpeg, webp</span>
+        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;custom_image&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Multiply title/legend/axis/canvas sizes by this factor</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;modeBarButtonsToRemove&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;select2d&quot;</span><span class="p">,</span> <span class="s2">&quot;lasso2d&quot;</span><span class="p">],</span>
+<span class="p">})</span>
+<span class="sd">&quot;&quot;&quot;Dictionary containing configuration options for the plotly plots.&quot;&quot;&quot;</span>
+<span class="n">LAYOUT</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">autosize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">template</span><span class="o">=</span><span class="n">BOOTSTRAP</span><span class="p">,</span>
+    <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+    <span class="n">dragmode</span><span class="o">=</span><span class="s2">&quot;pan&quot;</span><span class="p">,</span>
+    <span class="n">font_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+    <span class="n">hovermode</span><span class="o">=</span><span class="s2">&quot;closest&quot;</span><span class="p">,</span>
+    <span class="n">modebar</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;orientation&quot;</span><span class="p">:</span> <span class="s2">&quot;v&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Dictionary containing the layout options for the plotly plots.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="reset_fig">
+<a class="viewcode-back" href="../xps_count.html#main.reset_fig">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_fig</span><span class="p">(</span><span class="n">batch_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method to create blank plot figure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    batch_mode : bool, optional</span>
+<span class="sd">        Boolean indicating if the measurement is a batch mode measurement, by default False</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    plotly.graph_objects.Figure</span>
+<span class="sd">        The plotly Figure object created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trace_name</span> <span class="o">=</span> <span class="s2">&quot;pass_1&quot;</span>
+    <span class="k">if</span> <span class="n">batch_mode</span><span class="p">:</span>
+        <span class="n">trace_name</span> <span class="o">=</span> <span class="s2">&quot;b1_pass_1&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[],</span> <span class="n">y</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;markers+lines&quot;</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">marker_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">trace_name</span><span class="p">)],</span>
+        <span class="n">layout</span><span class="o">=</span><span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">LAYOUT</span><span class="p">,</span>
+            <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">,</span>
+            <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">&quot;Counts&quot;</span><span class="p">,</span>
+            <span class="n">uirevision</span><span class="o">=</span><span class="s2">&quot;no_change&quot;</span><span class="p">,</span>
+            <span class="n">legend</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;orientation&quot;</span><span class="p">:</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;xanchor&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">addPlotRefLines</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="addPlotRefLines">
+<a class="viewcode-back" href="../xps_count.html#main.addPlotRefLines">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">addPlotRefLines</span><span class="p">(</span><span class="n">fig</span><span class="p">:</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method to add reference photoelectron spectral lines to the plot figure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fig : plotly.graph_objects.Figure</span>
+<span class="sd">        The pltoly graph objects in which the reference lines are to be added.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    plotly.graph_objects.Figure</span>
+<span class="sd">        The plotly Figure object with the added reference lines.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_vline</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="mf">83.95</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#B3DF72&quot;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\large \text{Au 4f}_\text{7/2}$&quot;</span><span class="p">,</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_vline</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="mf">87.9</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#FD9891&quot;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\large \text{Au 4f}_\text{5/2}$&quot;</span><span class="p">,</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_vline</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="mf">284.4</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#FEC195&quot;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\large \text{C 1s}$&quot;</span><span class="p">,</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_vline</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="mf">72.84</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#F5CD47&quot;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\large \text{Al 2p}_\text{3/2}$&quot;</span><span class="p">,</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_vline</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="mf">532.70</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#7EE2B8&quot;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\large \text{O 1s}$&quot;</span><span class="p">,</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_vline</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="mi">118</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#9DD9EE&quot;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">opacity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\large \text{Al 2s}$&quot;</span><span class="p">,</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="addOrUpdatePlotTraceData">
+<a class="viewcode-back" href="../xps_count.html#main.addOrUpdatePlotTraceData">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">addOrUpdatePlotTraceData</span><span class="p">(</span>
+    <span class="n">fig</span><span class="p">:</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">,</span> <span class="n">pass_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x_data</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">y_data</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">trace_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method to add or update the trace in the plotly Figure object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fig : plotly.graph_objects.Figure</span>
+<span class="sd">        The plotly Figure object in which the trace dat is to be added or updated.</span>
+<span class="sd">    pass_index : int</span>
+<span class="sd">        The integer indicating the pass no. of the new data to be updated.</span>
+<span class="sd">    x_data : pl.Series</span>
+<span class="sd">        The x coordinates for the trace to be added or updated.</span>
+<span class="sd">    y_data : pl.Series</span>
+<span class="sd">        The y coordinates for the trace data to be added or updated.</span>
+<span class="sd">    trace_name : str</span>
+<span class="sd">        The trace name that is to be added or updated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    plotly.graph_objects.Figure</span>
+<span class="sd">        The plotly Figure object after adding or updating the traces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">existing_passes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fig</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">existing_passes</span> <span class="o">&lt;</span> <span class="n">pass_index</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+            <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">x_data</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;markers+lines&quot;</span><span class="p">,</span>
+                <span class="n">line_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">marker_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">trace_name</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">update_traces</span><span class="p">(</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">x_data</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span>
+        <span class="n">selector</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">trace_name</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">App</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;The wxApp for the GUI frontend.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="MainWindow">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MainWindow</span><span class="p">(</span><span class="n">mainframe</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for the GUI backend.</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    connectLabJack:</span>
+<span class="sd">        Connect to the Labjack U6 device.</span>
+<span class="sd">    bindingEnergyToVolt:</span>
+<span class="sd">        Convert the binding energy to voltage for the MAX5216 DAC.</span>
+<span class="sd">    setSpiVoltage:</span>
+<span class="sd">        Set the voltage at the MAX5216 DAC.</span>
+<span class="sd">    startMeasurement:</span>
+<span class="sd">        Start the measurement process.</span>
+<span class="sd">    runSingleMeasurement:</span>
+<span class="sd">        Run a single measurement.</span>
+<span class="sd">    runBatchMeasurement:</span>
+<span class="sd">        Run a batch measurement.</span>
+<span class="sd">    saveMeasurementData:</span>
+<span class="sd">        Save the measurement data to a CSV file.</span>
+<span class="sd">    sendSharedData:</span>
+<span class="sd">        Method to save data to the Shared Memory which is also accessed by the plot server for plotting.</span>
+<span class="sd">    startPlotServer:</span>
+<span class="sd">        Code to execute when the Restart Plot Server button is clicked.</span>
+<span class="sd">    enableControls:</span>
+<span class="sd">        Enable the controls in the UI.</span>
+<span class="sd">    disableControls:</span>
+<span class="sd">        Disable the controls in the UI.</span>
+<span class="sd">    interruptionClicked:</span>
+<span class="sd">        Handle the interruption of the measurement.</span>
+<span class="sd">    onClose:</span>
+<span class="sd">        Method fired when the close button is clicked.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">BATCH_START_EV</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Index of the start energy value in the batch input table.&quot;&quot;&quot;</span>
+    <span class="n">BATCH_END_EV</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Index of the end energy value in the batch input table.&quot;&quot;&quot;</span>
+    <span class="n">BATCH_STEP_EV</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Index of the step energy value in the batch input table.&quot;&quot;&quot;</span>
+    <span class="n">BATCH_TIME_PER_STEP</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Index of the time per step value in the batch input table.&quot;&quot;&quot;</span>
+    <span class="n">BATCH_PASSES</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Index of the number of passes value in the batch input table.&quot;&quot;&quot;</span>
+    <span class="n">EXCITATION_AL</span> <span class="o">=</span> <span class="mf">1486.6</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The excitation energy for Aluminium cathode.&quot;&quot;&quot;</span>
+    <span class="n">EXCITATION_MG</span> <span class="o">=</span> <span class="mf">1253.6</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The excitation energy for Magnesium cathode.&quot;&quot;&quot;</span>
+    <span class="n">U6_MOSI_PIN_NUM</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The MOSI pin number for the Labjack U6.&quot;&quot;&quot;</span>
+    <span class="n">U6_MISO_PIN_NUM</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The MISO pin number for the Labjack U6.&quot;&quot;&quot;</span>
+    <span class="n">U6_CLK_PIN_NUM</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The CLK pin number for the Labjack U6.&quot;&quot;&quot;</span>
+    <span class="n">U6_CS_PIN_NUM</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The CS pin number for the Labjack U6.&quot;&quot;&quot;</span>
+    <span class="n">DEP_PATH</span> <span class="o">=</span> <span class="s2">&quot;.</span><span class="se">\\</span><span class="s2">src</span><span class="se">\\</span><span class="s2">dependencies</span><span class="se">\\</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Path for all the files that the program requires to function.&quot;&quot;&quot;</span>
+    <span class="c1"># These variables contain settings for the plotly plots / live plot seen in the UI</span>
+    <span class="n">CONFIG</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">({</span>
+        <span class="s2">&quot;scrollZoom&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;displaylogo&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;toImageButtonOptions&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;svg&quot;</span><span class="p">,</span>  <span class="c1"># one of png, svg, jpeg, webp</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;custom_image&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Multiply title/legend/axis/canvas sizes by this factor</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;modeBarButtonsToRemove&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;select2d&quot;</span><span class="p">,</span> <span class="s2">&quot;lasso2d&quot;</span><span class="p">],</span>
+    <span class="p">})</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dictionary containing configuration options for the plotly plots.&quot;&quot;&quot;</span>
+    <span class="n">LAYOUT</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">autosize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">template</span><span class="o">=</span><span class="n">BOOTSTRAP</span><span class="p">,</span>
+        <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+        <span class="n">dragmode</span><span class="o">=</span><span class="s2">&quot;pan&quot;</span><span class="p">,</span>
+        <span class="n">font_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+        <span class="n">hovermode</span><span class="o">=</span><span class="s2">&quot;closest&quot;</span><span class="p">,</span>
+        <span class="n">modebar</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;orientation&quot;</span><span class="p">:</span> <span class="s2">&quot;v&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dictionary containing the layout options for the plotly plots.&quot;&quot;&quot;</span>
+
+    <span class="n">start_ev</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The starting energy value for the measurement.&quot;&quot;&quot;</span>
+    <span class="n">end_ev</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ending energy value for the measurement.&quot;&quot;&quot;</span>
+    <span class="n">step_ev</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The step width for the measurement.&quot;&quot;&quot;</span>
+    <span class="n">setpoint_ev</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The current energy value for the measurement.&quot;&quot;&quot;</span>
+    <span class="n">time_per_step</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The time per step for the measurement.&quot;&quot;&quot;</span>
+    <span class="n">pass_no</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The number of passes for the measurement.&quot;&quot;&quot;</span>
+    <span class="n">u6_labjack</span><span class="p">:</span> <span class="n">u6</span><span class="o">.</span><span class="n">U6</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lajack U6 object for the measurement.&quot;&quot;&quot;</span>
+    <span class="n">labjack_connect</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Boolean to check if the Labjack is connected.&quot;&quot;&quot;</span>
+    <span class="n">data_table</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Polars DataFrame to store the measurement data.&quot;&quot;&quot;</span>
+    <span class="n">pass_row_indexes</span><span class="p">:</span> <span class="nb">list</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of row indices indicating start of new passes.&quot;&quot;&quot;</span>
+    <span class="n">typ_schema</span><span class="p">:</span> <span class="nb">dict</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dictionary with the type schema for the polars Dataframe.&quot;&quot;&quot;</span>
+    <span class="n">measurement_thread</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Thread object to run the measurement.&quot;&quot;&quot;</span>
+    <span class="n">excitation_voltage</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Selected excitation voltage for the measurement.&quot;&quot;&quot;</span>
+    <span class="n">plot_fig</span><span class="p">:</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plotly figure object to plot the measurement data.&quot;&quot;&quot;</span>
+    <span class="n">share_mem_plot_data</span><span class="p">:</span> <span class="n">SharedMemoryDict</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shared memory buffer to store the plot data.&quot;&quot;&quot;</span>
+    <span class="n">plot_server_process</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot server process to display the plot in the UI.&quot;&quot;&quot;</span>
+    <span class="n">plot_file_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;HTML plot file name.&quot;&quot;&quot;</span>
+    <span class="n">meas_interrupted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Boolean to check if the measurement was interrupted.&quot;&quot;&quot;</span>
+    <span class="n">meas_interrupt_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ID of the button that was clicked to interrupt the measurement.&quot;&quot;&quot;</span>
+    <span class="n">meas_running</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Boolean to check if the measurement is running.&quot;&quot;&quot;</span>
+    <span class="n">total_batch_passes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Integer holding the total batch passes during the batch mode measurement.&quot;&quot;&quot;</span>
+    <span class="n">batch_pass_no</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Integer holding the current batch pass no. during a batch measurement.&quot;&quot;&quot;</span>
+    <span class="n">batch_step_no</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Integer holding the current step no. during a batch mode measuremeet.&quot;&quot;&quot;</span>
+    <span class="n">plot_iter</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Integer holding the plot iteration of the measurement. Reset to 1 after every measurement.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the main window of the program.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parent : wx.Window</span>
+<span class="sd">            The parent window of the main window.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mainframe</span><span class="o">.</span><span class="n">mainFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_CLOSE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onClose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connectLabjack</span><span class="p">()</span>
+
+        <span class="c1"># Disable history in for the plot window (browser based).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotView</span><span class="o">.</span><span class="n">EnableHistory</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Disable plot window DevTools access.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotView</span><span class="o">.</span><span class="n">EnableAccessToDevTools</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Disable plot window context menu.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotView</span><span class="o">.</span><span class="n">EnableContextMenu</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_file_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">src</span><span class="se">\\</span><span class="s2">dependencies</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;plt_dat.html&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span> <span class="o">=</span> <span class="n">SharedMemoryDict</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;plotdata&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startPlotServer</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">new_data_temp</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;Pass No.&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;Time_per_step [s]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;Counts_per_milli [/ms]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;U6_DAC0_Voltage [V]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;MAX5216_DAC_Voltage [V]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendSharedData</span><span class="p">(</span><span class="n">new_data_temp</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Load plot html in the plot window.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotView</span><span class="o">.</span><span class="n">LoadURL</span><span class="p">(</span><span class="s2">&quot;http://localhost:8050/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pass_row_indexes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MainWindow.connectLabjack">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.connectLabjack">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectLabjack</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect to the Labjack U6 device.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span> <span class="o">=</span> <span class="n">u6</span><span class="o">.</span><span class="n">U6</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">getCalibrationData</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">configIO</span><span class="p">(</span><span class="n">EnableCounter0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># ljud.eDAC(self.u6_labjack, 1, 3)  # Set the reference voltage for the MAX5216 DAC</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">getFeedback</span><span class="p">(</span><span class="n">u6</span><span class="o">.</span><span class="n">DAC1_8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">voltageToDACBits</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labjack_connect</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.bindingEnergyToVolt">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.bindingEnergyToVolt">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bindingEnergyToVolt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binding_energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the binding energy to voltage for the MAX5216 DAC.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        binding_energy : float</span>
+<span class="sd">            The binding energy value.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The voltage value for the MAX5216 DAC.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_ev</span> <span class="o">=</span> <span class="n">binding_energy</span>
+        <span class="n">kinetic_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitation_voltage</span> <span class="o">-</span> <span class="n">binding_energy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bindingEnergy</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">binding_energy</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kineticEnergy</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">kinetic_energy</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">kinetic_energy</span> <span class="o">/</span> <span class="mf">498.43</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.setSpiVoltage">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.setSpiVoltage">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setSpiVoltage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the voltage at the MAX5216 DAC.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        volt : float</span>
+<span class="sd">            The voltage value to set at the MAX5216 DAC.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ref_volt_at_MAX5216_DAC</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">getAIN</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># the reference voltage at the DAC MAX5216</span>
+        <span class="n">volt_bits</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="n">volt</span> <span class="o">*</span> <span class="mi">65535</span> <span class="o">/</span> <span class="n">ref_volt_at_MAX5216_DAC</span>
+        <span class="p">)</span>  <span class="c1"># convert input volts to a 16 bit scaled value with the reference voltage</span>
+        <span class="n">volt_bits</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">volt_bits</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span>
+        <span class="p">)</span>  <span class="c1"># shift the 16 bit value 6 bits to the left to make it a 22 bit value. Refer to MAX5216 datasheet</span>
+        <span class="n">volt_bits</span> <span class="o">|=</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">22</span>
+        <span class="p">)</span>  <span class="c1"># set the 23rd bit to 1 to indicate that the first 2 bits are the command bits. Refer to MAX5216 datasheet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">spi</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">volt_bits</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span>
+            <span class="n">CSPINNum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U6_CS_PIN_NUM</span><span class="p">,</span>
+            <span class="n">CLKPinNum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U6_CLK_PIN_NUM</span><span class="p">,</span>
+            <span class="n">MISOPinNum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U6_MISO_PIN_NUM</span><span class="p">,</span>
+            <span class="n">MOSIPinNum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">U6_MOSI_PIN_NUM</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># ljud.eDAC(self.u6_labjack, 0, volt)  # Set the voltage at DAC0 of the Labjack for comparison with MAX5216.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">getFeedback</span><span class="p">(</span><span class="n">u6</span><span class="o">.</span><span class="n">DAC0_8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">voltageToDACBits</span><span class="p">(</span><span class="n">volt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.startMeasurement">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.startMeasurement">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">startMeasurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">wx</span><span class="o">.</span><span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the measurement process.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event : wxEvent</span>
+<span class="sd">            wxEVT_BUTTON event generated.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">excitationSelect</span><span class="o">.</span><span class="n">GetValue</span><span class="p">():</span>
+            <span class="c1"># if the excitation slider in the UI is set to Mg, value will be 1. Hence True.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">excitation_voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXCITATION_MG</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">excitation_voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EXCITATION_AL</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modeSelect</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">():</span>
+            <span class="c1"># if Batch Scan tab is selected in the UI. Batch scan mode is 1. Single scan mode is 0.</span>
+
+            <span class="n">start_ev</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="n">end_ev</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="n">step_ev</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="n">time_per_step</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="n">pass_no</span><span class="p">:</span> <span class="nb">int</span>
+
+            <span class="n">total_time_s</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">total_steps</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_batch_passes</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_pass_no</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_step_no</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">for</span> <span class="n">row_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetNumberRows</span><span class="p">()):</span>
+                <span class="n">batch_time</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">start_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_START_EV</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">end_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_END_EV</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">step_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_STEP_EV</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">time_per_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_TIME_PER_STEP</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">pass_no</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_PASSES</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">start_ev</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">end_ev</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">step_ev</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_per_step</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">pass_no</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="k">break</span>
+                <span class="n">batch_time</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="n">time_per_step</span><span class="p">)</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">pass_no</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">end_ev</span><span class="p">)</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">start_ev</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">step_ev</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">total_time_s</span> <span class="o">+=</span> <span class="n">batch_time</span>
+                <span class="n">total_steps</span> <span class="o">+=</span> <span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">end_ev</span><span class="p">)</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">start_ev</span><span class="p">))</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">step_ev</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">pass_no</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">total_batch_passes</span> <span class="o">+=</span> <span class="n">pass_no</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">elapsedTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remainingTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">total_time_s</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">SetRange</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">total_steps</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measurement_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runBatchMeasurement</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_fig</span> <span class="o">=</span> <span class="n">reset_fig</span><span class="p">(</span><span class="n">batch_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">singleStarteV</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">singleEndeV</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">step_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">singleStepWidtheV</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_per_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">singleTimePerStep</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pass_no</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">singlePasses</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">SetRange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">end_ev</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_ev</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_ev</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pass_no</span><span class="p">))</span>
+            <span class="n">total_time_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_per_step</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pass_no</span> <span class="o">*</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">end_ev</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_ev</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_ev</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remainingTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">total_time_s</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elapsedTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">measurement_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runSingleMeasurement</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_ev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_ev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_per_step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pass_no</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_fig</span> <span class="o">=</span> <span class="n">reset_fig</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">typ_schema</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+            <span class="s2">&quot;Pass No.&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+            <span class="s2">&quot;Time_per_step [s]&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+            <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+            <span class="s2">&quot;Counts_per_milli [/ms]&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+            <span class="s2">&quot;U6_DAC0_Voltage [V]&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+            <span class="s2">&quot;MAX5216_DAC_Voltage [V]&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">data_temp</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;Pass No.&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;Time_per_step [s]&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;Counts_per_milli [/ms]&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;U6_DAC0_Voltage [V]&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;MAX5216_DAC_Voltage [V]&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_table</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">data_temp</span><span class="p">,</span>
+            <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">typ_schema</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pass_row_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">new_data_temp</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;Pass No.&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;Time_per_step [s]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;Counts_per_milli [/ms]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;U6_DAC0_Voltage [V]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;MAX5216_DAC_Voltage [V]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">batch_mode_check</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modeSelect</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">():</span>
+            <span class="n">batch_mode_check</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendSharedData</span><span class="p">(</span><span class="n">new_data_temp</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">batch_mode_check</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">meas_running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meas_interrupted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measurement_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">disableControls</span><span class="p">()</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.runSingleMeasurement">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.runSingleMeasurement">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">runSingleMeasurement</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">start_ev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">end_ev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">step_ev</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">time_per_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">pass_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">batch_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">batch_pass_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">type_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a single measurement.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start_ev : float</span>
+<span class="sd">            The starting energy value for the measurement in eV.</span>
+<span class="sd">        end_ev : float</span>
+<span class="sd">            The ending energy value for the measurement in eV.</span>
+<span class="sd">        step_ev : float</span>
+<span class="sd">            The step width for the measurement in eV.</span>
+<span class="sd">        time_per_step : float</span>
+<span class="sd">            The time per step for the measurement in s.</span>
+<span class="sd">        pass_no : int</span>
+<span class="sd">            The number of passes for the measurement.</span>
+<span class="sd">        type_batch : bool</span>
+<span class="sd">            The type of measurement. True for batch measurement, False for single measurement.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSpiVoltage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bindingEnergyToVolt</span><span class="p">(</span><span class="n">start_ev</span><span class="p">))</span>
+
+        <span class="n">pass_index</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">typ_schema</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+            <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="n">pl</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">data_temp</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+
+        <span class="n">plot_dataframe</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">data_temp</span><span class="p">,</span>
+            <span class="n">schema</span><span class="o">=</span><span class="n">typ_schema</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_per_step</span>
+
+
+        <span class="k">while</span> <span class="n">pass_index</span> <span class="o">&lt;=</span> <span class="n">pass_no</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">getFeedback</span><span class="p">(</span><span class="n">u6</span><span class="o">.</span><span class="n">Counter0</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">__refresh_time</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">__refresh_time</span> <span class="o">&lt;=</span> <span class="n">time_per_step</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meas_interrupted</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="n">__refresh_time</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">time_per_step</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">__refresh_time</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time_per_step</span> <span class="o">-</span> <span class="n">__refresh_time</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meas_interrupted</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">meas_interrupted</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meas_interrupt_id</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_CANCEL</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">data_temp</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">&quot;Pass No.&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="s2">&quot;Time_per_step [s]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">&quot;Counts_per_milli [/ms]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">&quot;U6_DAC0_Voltage [V]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s2">&quot;MAX5216_DAC_Voltage [V]&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">}</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_table</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                        <span class="n">data_temp</span><span class="p">,</span>
+                        <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">typ_schema</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pass_row_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sendSharedData</span><span class="p">(</span><span class="n">data_temp</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">saveMeasurementData</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="k">return</span>
+            <span class="c1"># time.sleep(self.time_per_step)</span>
+            <span class="c1"># counts = ljud.eTCValues(</span>
+            <span class="c1">#     self.u6_labjack,</span>
+            <span class="c1">#     aReadTimers=[0, 0, 0, 0],</span>
+            <span class="c1">#     aUpdateResetTimers=[0, 0, 0, 0],</span>
+            <span class="c1">#     aReadCounters=[1, 0],</span>
+            <span class="c1">#     aResetCounters=[0, 0],</span>
+            <span class="c1">#     aTimerValues=[0, 0, 0, 0],</span>
+            <span class="c1"># )[1][0]</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">getFeedback</span><span class="p">(</span><span class="n">u6</span><span class="o">.</span><span class="n">Counter0</span><span class="p">(</span><span class="kc">False</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">time_taken</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>  <span class="c1"># record in s</span>
+            <span class="n">binding_energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_ev</span>
+            <span class="n">counts_per_milli</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">counts</span> <span class="o">/</span> <span class="p">(</span><span class="n">time_taken</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span>
+            <span class="n">u6_dac0_voltage</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">getAIN</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span>
+            <span class="n">max5216_dac_voltage</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u6_labjack</span><span class="o">.</span><span class="n">getAIN</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span>
+
+            <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="n">binding_energy</span><span class="p">,</span>
+                <span class="s2">&quot;Pass No.&quot;</span><span class="p">:</span> <span class="n">pass_index</span><span class="p">,</span>
+                <span class="s2">&quot;Time_per_step [s]&quot;</span><span class="p">:</span> <span class="n">time_taken</span><span class="p">,</span>
+                <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="n">counts</span><span class="p">,</span>
+                <span class="s2">&quot;Counts_per_milli [/ms]&quot;</span><span class="p">:</span> <span class="n">counts_per_milli</span><span class="p">,</span>
+                <span class="s2">&quot;U6_DAC0_Voltage [V]&quot;</span><span class="p">:</span> <span class="n">u6_dac0_voltage</span><span class="p">,</span>
+                <span class="s2">&quot;MAX5216_DAC_Voltage [V]&quot;</span><span class="p">:</span> <span class="n">max5216_dac_voltage</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="n">new_plot_point</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">binding_energy</span><span class="p">],</span>
+                    <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">counts</span><span class="p">],</span>
+                <span class="p">},</span>
+                <span class="n">schema</span><span class="o">=</span><span class="n">typ_schema</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">plot_dataframe</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">plot_dataframe</span><span class="p">,</span> <span class="n">new_plot_point</span><span class="p">])</span>
+
+            <span class="n">new_df</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">typ_schema</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_table</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data_table</span><span class="p">,</span> <span class="n">new_df</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">type_batch</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_fig</span> <span class="o">=</span> <span class="n">addOrUpdatePlotTraceData</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plot_fig</span><span class="p">,</span>
+                    <span class="n">pass_index</span><span class="p">,</span>
+                    <span class="n">plot_dataframe</span><span class="p">[</span><span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">],</span>
+                    <span class="n">plot_dataframe</span><span class="p">[</span><span class="s2">&quot;Counts&quot;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s2">&quot;pass_</span><span class="si">{</span><span class="n">pass_index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_fig</span> <span class="o">=</span> <span class="n">addOrUpdatePlotTraceData</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plot_fig</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">batch_pass_no</span><span class="p">,</span>
+                    <span class="n">plot_dataframe</span><span class="p">[</span><span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">],</span>
+                    <span class="n">plot_dataframe</span><span class="p">[</span><span class="s2">&quot;Counts&quot;</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s2">&quot;b</span><span class="si">{</span><span class="n">batch_no</span><span class="si">}</span><span class="s2">_pass_</span><span class="si">{</span><span class="n">pass_index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="c1"># if not type_batch:</span>
+            <span class="c1">#     if existing_passes &lt; pass_index:</span>
+            <span class="c1">#         self.pass_row_indexes.append(temp_row_index)</span>
+            <span class="c1">#         self.plot_fig.add_trace(</span>
+            <span class="c1">#             go.Scatter(</span>
+            <span class="c1">#                 x=plot_dataframe[&quot;Binding Energy [eV]&quot;],</span>
+            <span class="c1">#                 y=plot_dataframe[&quot;Counts&quot;],</span>
+            <span class="c1">#                 mode=&quot;markers+lines&quot;,</span>
+            <span class="c1">#                 line_width=1,</span>
+            <span class="c1">#                 marker_size=4,</span>
+            <span class="c1">#                 name=f&quot;pass_{pass_index}&quot;,</span>
+            <span class="c1">#             )</span>
+            <span class="c1">#         )</span>
+            <span class="c1">#     self.plot_fig.update_traces(</span>
+            <span class="c1">#         overwrite=False,</span>
+            <span class="c1">#         x=plot_dataframe[&quot;Binding Energy [eV]&quot;],</span>
+            <span class="c1">#         y=plot_dataframe[&quot;Counts&quot;],</span>
+            <span class="c1">#         selector=dict(name=f&quot;pass_{pass_index}&quot;),</span>
+            <span class="c1">#     )</span>
+            <span class="c1"># else:</span>
+            <span class="c1">#     if existing_passes &lt; self.batch_pass_no:</span>
+            <span class="c1">#         self.plot_fig.add_trace(</span>
+            <span class="c1">#             go.Scatter(</span>
+            <span class="c1">#                 x=plot_dataframe[&quot;Binding Energy [eV]&quot;],</span>
+            <span class="c1">#                 y=plot_dataframe[&quot;Counts&quot;],</span>
+            <span class="c1">#                 mode=&quot;markers+lines&quot;,</span>
+            <span class="c1">#                 line_width=1,</span>
+            <span class="c1">#                 marker_size=4,</span>
+            <span class="c1">#                 name=f&quot;b{batch_no}_pass_{pass_index}&quot;,</span>
+            <span class="c1">#             )</span>
+            <span class="c1">#         )</span>
+            <span class="c1">#     self.plot_fig.update_traces(</span>
+            <span class="c1">#         overwrite=False,</span>
+            <span class="c1">#         x=plot_dataframe[&quot;Binding Energy [eV]&quot;],</span>
+            <span class="c1">#         y=plot_dataframe[&quot;Counts&quot;],</span>
+            <span class="c1">#         selector=dict(name=f&quot;b{batch_no}_pass_{pass_index}&quot;),</span>
+            <span class="c1">#     )</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_file_name</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">,</span>
+                <span class="n">include_plotlyjs</span><span class="o">=</span><span class="s2">&quot;cdn&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendSharedData</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">type_batch</span><span class="p">,</span> <span class="n">batch_no</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_iter</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">new_remaining_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remainingTime</span><span class="o">.</span><span class="n">GetValue</span><span class="p">())</span> <span class="o">-</span> <span class="n">time_taken</span> <span class="o">/</span> <span class="mi">60</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remainingTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">new_remaining_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+            <span class="n">new_elapsed_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elapsedTime</span><span class="o">.</span><span class="n">GetValue</span><span class="p">())</span> <span class="o">+</span> <span class="n">time_taken</span> <span class="o">/</span> <span class="mi">60</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elapsedTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">new_elapsed_time</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_ev</span> <span class="o">+</span> <span class="n">step_ev</span> <span class="o">&lt;=</span> <span class="n">end_ev</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_ev</span> <span class="o">+=</span> <span class="n">step_ev</span>
+                <span class="k">if</span> <span class="n">type_batch</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">batch_step_no</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setSpiVoltage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bindingEnergyToVolt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoint_ev</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setSpiVoltage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bindingEnergyToVolt</span><span class="p">(</span><span class="n">start_ev</span><span class="p">))</span>
+                <span class="n">pass_index</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">type_batch</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">batch_pass_no</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">plot_dataframe</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;Binding Energy [eV]&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                        <span class="s2">&quot;Counts&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                    <span class="p">},</span>
+                    <span class="n">typ_schema</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_iter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">saveMeasurementData</span><span class="p">(</span><span class="n">type_batch</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.runBatchMeasurement">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.runBatchMeasurement">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">runBatchMeasurement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a batch measurement.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetNumberRows</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meas_running</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_START_EV</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">end_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_END_EV</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">step_ev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_STEP_EV</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">time_per_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_TIME_PER_STEP</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pass_no</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchInput</span><span class="o">.</span><span class="n">GetCellValue</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BATCH_PASSES</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_ev</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_ev</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step_ev</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_per_step</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pass_no</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">saveMeasurementData</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runSingleMeasurement</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">start_ev</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">end_ev</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">step_ev</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">time_per_step</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pass_no</span><span class="p">,</span>
+                    <span class="n">row_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">batch_pass_no</span><span class="p">,</span>
+                    <span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.saveMeasurementData">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.saveMeasurementData">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">saveMeasurementData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the measurement data to a CSV file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch : bool</span>
+<span class="sd">            The type of measurement. True for batch measurement, False for single measurement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">batch</span><span class="p">:</span>
+            <span class="n">wait</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BusyCursor</span><span class="p">()</span>
+            <span class="n">wxsavefiledialog1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">FileDialog</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="s2">&quot;Save data as&quot;</span><span class="p">,</span>
+                <span class="n">defaultFile</span><span class="o">=</span><span class="n">wx</span><span class="o">.</span><span class="n">DateTime</span><span class="o">.</span><span class="n">UNow</span><span class="p">()</span><span class="o">.</span><span class="n">Format</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">%m%y&quot;</span><span class="p">),</span>
+                <span class="n">wildcard</span><span class="o">=</span><span class="s2">&quot;CSV files(*.csv)|*.csv&quot;</span><span class="p">,</span>
+                <span class="n">style</span><span class="o">=</span><span class="n">wx</span><span class="o">.</span><span class="n">FD_SAVE</span> <span class="o">|</span> <span class="n">wx</span><span class="o">.</span><span class="n">FD_OVERWRITE_PROMPT</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">wxsavefiledialog1</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_CANCEL</span><span class="p">:</span>
+                <span class="n">wxsavefiledialog1</span><span class="o">.</span><span class="n">SetFilename</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="c1"># copy of file for plotting</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEP_PATH</span> <span class="o">+</span> <span class="s2">&quot;aktualdata.csv&quot;</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_table</span><span class="o">.</span><span class="n">write_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wxsavefiledialog1</span><span class="o">.</span><span class="n">GetFilename</span><span class="p">()):</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="n">wxsavefiledialog1</span><span class="o">.</span><span class="n">GetPath</span><span class="p">()</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_table</span><span class="o">.</span><span class="n">write_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">plot_fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span>
+                        <span class="n">filename</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.html&quot;</span><span class="p">,</span>
+                        <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">,</span>
+                        <span class="n">include_plotlyjs</span><span class="o">=</span><span class="s2">&quot;cdn&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># copy of file for plotting</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEP_PATH</span> <span class="o">+</span> <span class="s2">&quot;aktualdata.csv&quot;</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_table</span><span class="o">.</span><span class="n">write_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+                <span class="n">wxsavefiledialog1</span><span class="o">.</span><span class="n">SetFilename</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">wait</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measProgress</span><span class="o">.</span><span class="n">GetRange</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remainingTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="mf">0.0</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enableControls</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendSharedData</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_iter</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.sendSharedData">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.sendSharedData">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sendSharedData</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">meas_running</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">cancelled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">batch_mode</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">batch_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">point_iter</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to save data to the Shared Memory which is also accessed by the plot server for plotting.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : dict | None</span>
+<span class="sd">            The data dictionary for the plot.</span>
+<span class="sd">        meas_running : bool</span>
+<span class="sd">            Boolean indicating whether the measurement is currently running.</span>
+<span class="sd">        cancelled : bool</span>
+<span class="sd">            Boolean indicating whether the measurement was cancelled.</span>
+<span class="sd">        batch_mode : bool</span>
+<span class="sd">            Boolean indicating if the measurement is a batch measurement.</span>
+<span class="sd">        batch_no : int</span>
+<span class="sd">            Integer indicating the index of the batch measurement.</span>
+<span class="sd">        point_iter : int</span>
+<span class="sd">            Integer indicating the iteration point to control which point the plot server is updating.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="p">[</span><span class="s2">&quot;fig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="p">[</span><span class="s2">&quot;run_status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meas_running</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="p">[</span><span class="s2">&quot;iteration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="p">[</span><span class="s2">&quot;cancelled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cancelled</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="p">[</span><span class="s2">&quot;batch_details&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">batch_type</span><span class="o">=</span><span class="n">batch_mode</span><span class="p">,</span>
+            <span class="n">batch_no</span><span class="o">=</span><span class="n">batch_no</span><span class="p">,</span>
+            <span class="n">batch_pass_no</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_pass_no</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.startPlotServer">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.startPlotServer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">startPlotServer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">wx</span><span class="o">.</span><span class="n">Event</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Code to execute when the Restart Plot Server button is clicked.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event : wxEvent | None</span>
+<span class="sd">            wxEVT_BUTTON event generated. None when the method if to be fired by other means.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotView</span><span class="o">.</span><span class="n">Reload</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_server_process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;/MIN&quot;</span><span class="p">,</span> <span class="s2">&quot;cmd&quot;</span><span class="p">,</span> <span class="s2">&quot;/k&quot;</span><span class="p">,</span> <span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">src</span><span class="se">\\</span><span class="s2">dependencies</span><span class="se">\\</span><span class="s2">plot_dash_client_copy.py&quot;</span><span class="p">],</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+        <span class="c1"># event.Skip()</span>
+
+<div class="viewcode-block" id="MainWindow.enableControls">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.enableControls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enableControls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enable the controls in the UI.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modeSelect</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startButton</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">excitationSelect</span><span class="o">.</span><span class="n">Enable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.disableControls">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.disableControls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disableControls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disable the controls in the UI.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modeSelect</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startButton</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">excitationSelect</span><span class="o">.</span><span class="n">Disable</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.interruptionClicked">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.interruptionClicked">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">interruptionClicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">wx</span><span class="o">.</span><span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle the interruption of the measurement.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event : wxEvent</span>
+<span class="sd">            wxEVT_BUTTON event generated.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meas_interrupted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meas_running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_CANCEL</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meas_interrupt_id</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_CANCEL</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meas_interrupt_id</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_STOP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enableControls</span><span class="p">()</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MainWindow.onClose">
+<a class="viewcode-back" href="../xps_count.html#main.MainWindow.onClose">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">onClose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method fired when the close button is clicked.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event : wx.Event</span>
+<span class="sd">            The close event that calls the function.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_server_process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="o">.</span><span class="n">shm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">share_mem_plot_data</span><span class="o">.</span><span class="n">shm</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotView</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Destroy</span><span class="p">()</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">ExitMainLoop</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">MainWindow</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">pywinstyles</span><span class="o">.</span><span class="n">apply_style</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="s2">&quot;mica&quot;</span><span class="p">)</span>
+    <span class="n">frame</span><span class="o">.</span><span class="n">Show</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">frame</span><span class="o">.</span><span class="n">Centre</span><span class="p">()</span>
+    <span class="n">frame</span><span class="o">.</span><span class="n">SetFocus</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">MainLoop</span><span class="p">()</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Ashley Dalmeida
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/./furo_mod.js?v=fb588d8d"></script>
+    </body>
+</html>

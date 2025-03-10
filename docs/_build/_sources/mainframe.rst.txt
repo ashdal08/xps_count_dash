@@ -1,0 +1,17 @@
+.. :tocdepth: 2
+
+mainframe GUI module
+=====================
+
+This GUI module is created using wxUIEditor (https://github.com/KeyWorksRW/wxUiEditor). To make changes to the controls, open the \*.wxui file in the ./dependencies folder with wxUIEditor.
+
+.. automodule:: dependencies.mainframe
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Source Code
+-----------
+
+.. literalinclude:: ../src/dependencies/mainframe.py
+   :linenos:
