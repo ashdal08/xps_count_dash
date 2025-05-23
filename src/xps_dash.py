@@ -164,6 +164,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{Au 4f}_\text{7/2}$",
         showlegend=True,
+        visible='legendonly',
     )
     fig.add_vline(
         x=87.9,
@@ -175,6 +176,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{Au 4f}_\text{5/2}$",
         showlegend=True,
+        visible='legendonly',
     )
     fig.add_vline(
         x=284.4,
@@ -186,6 +188,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{C 1s}$",
         showlegend=True,
+        visible='legendonly',
     )
     fig.add_vline(
         x=72.84,
@@ -197,6 +200,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{Al 2p}_\text{3/2}$",
         showlegend=True,
+        visible='legendonly',
     )
     fig.add_vline(
         x=532.70,
@@ -208,6 +212,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{O 1s}$",
         showlegend=True,
+        visible='legendonly',
     )
     fig.add_vline(
         x=118,
@@ -219,6 +224,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{Al 2s}$",
         showlegend=True,
+        visible='legendonly',
     )
 
     return fig
