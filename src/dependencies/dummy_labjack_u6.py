@@ -19,6 +19,7 @@ class U6():
     __counter_thread : threading.Thread
     __dac_1 : float
     __dac_0 : float
+    __D_PIN_STATES : list = [0, 0, 0, 0, 0, 0, 0, 0]
     
     def __init__(self):
         pass
@@ -54,6 +55,12 @@ class U6():
             return self.__dac_0
         else:
             return self.__dac_1
+        
+    def setDOState(self, ioNum: int, state:int):
+        self.__D_PIN_STATES[ioNum] = state
+
+    def getDIState(self, ioNum: int):
+        return self.__D_PIN_STATES[ioNum]
     
     def configU6(self):
         pass

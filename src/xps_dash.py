@@ -2,6 +2,9 @@ import math
 import re
 import time
 import os
+
+os.environ["MIMALLOC_ABANDONED_PAGE_RESET"] = "1"
+
 import numpy as np
 import pandas as pd
 import polars as pl
@@ -15,8 +18,8 @@ import plotly.io as pio
 from gevent.pywsgi import WSGIServer
 import waitress
 
-import u6
-# from dependencies import dummy_labjack_u6 as u6
+# import u6
+from dependencies import dummy_labjack_u6 as u6
 
 from dash import (
     Dash,
@@ -30,7 +33,10 @@ from dash import (
     State,
     ClientsideFunction,
     dash_table,
+    ctx,
+    no_update,
 )
+import dash
 import dash_bootstrap_components as dbc
 
 from dash_bootstrap_templates import load_figure_template
@@ -164,7 +170,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{Au 4f}_\text{7/2}$",
         showlegend=True,
-        visible='legendonly',
+        visible="legendonly",
     )
     fig.add_vline(
         x=87.9,
@@ -176,7 +182,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{Au 4f}_\text{5/2}$",
         showlegend=True,
-        visible='legendonly',
+        visible="legendonly",
     )
     fig.add_vline(
         x=284.4,
@@ -188,7 +194,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{C 1s}$",
         showlegend=True,
-        visible='legendonly',
+        visible="legendonly",
     )
     fig.add_vline(
         x=72.84,
@@ -200,7 +206,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{Al 2p}_\text{3/2}$",
         showlegend=True,
-        visible='legendonly',
+        visible="legendonly",
     )
     fig.add_vline(
         x=532.70,
@@ -212,7 +218,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{O 1s}$",
         showlegend=True,
-        visible='legendonly',
+        visible="legendonly",
     )
     fig.add_vline(
         x=118,
@@ -224,7 +230,7 @@ def addPlotRefLines(fig: go.Figure) -> go.Figure:
         opacity=0.6,
         name=r"$\large \text{Al 2s}$",
         showlegend=True,
-        visible='legendonly',
+        visible="legendonly",
     )
 
     return fig
@@ -476,6 +482,14 @@ class DataBackend:
     """Integer holding the current step number during a batch measurement."""
     meas_completed: bool = False
     """Boolean indicating if a measurement is completed."""
+    tx400_filament_2_selected: int = 1
+    """Boolean indicating if the filament 2 (Al) of the TX400 X-ray source is selected."""
+    tx400_emission_selected: bool = False
+    """Boolean indicating if the emission control of the TX400 X-ray source is selected."""
+    tx400_current_value: float = 0.0
+    """Float variable holding the current value of the TX400 X-ray source filament/emission current."""
+    sl600_inhibited: bool = False
+    """Boolean indicating if the SL600 X-ray source is inhibited."""
 
     def __init__(self) -> None:
         """
@@ -695,6 +709,12 @@ class DataBackend:
             "Counts": [],
         })
 
+        if type_batch:
+            plot_dataframe = pd.DataFrame({
+                "Binding Energy [eV]": [],
+                "Counts_per_milli [/ms]": [],
+            })
+
         step_no = 1
 
         while pass_index <= pass_no:
@@ -704,12 +724,14 @@ class DataBackend:
             while __refresh_time <= time_per_step:
                 if self.meas_interrupted:
                     break
-                if __refresh_time + 1 < time_per_step:
-                    time.sleep(1)
-                    __refresh_time += 1
-                else:
-                    time.sleep(time_per_step - __refresh_time)
-                    break
+                time.sleep(0.25)
+                __refresh_time += 0.25
+                # if __refresh_time + 1 < time_per_step:
+                #     time.sleep(1)
+                #     __refresh_time += 1
+                # else:
+                #     time.sleep(time_per_step - __refresh_time)
+                #     break
 
             if self.meas_interrupted:
                 self.meas_interrupted = False
@@ -739,6 +761,12 @@ class DataBackend:
                 "Binding Energy [eV]": [binding_energy],
                 "Counts": [counts],
             })
+
+            if type_batch:
+                new_plot_point = pd.DataFrame({
+                    "Binding Energy [eV]": [binding_energy],
+                    "Counts_per_milli [/ms]": [counts_per_milli],
+                })
 
             plot_dataframe = pd.concat([plot_dataframe, new_plot_point])
 
@@ -825,11 +853,16 @@ class DataBackend:
                     "Binding Energy [eV]": [],
                     "Counts": [],
                 })
+                if type_batch:
+                    plot_dataframe = pd.DataFrame({
+                        "Binding Energy [eV]": [],
+                        "Counts_per_milli [/ms]": [],
+                    })
 
         if not type_batch:
             self.current_progress = 100
             self.remaining_time = 0.0
-            time.sleep(1)
+            time.sleep(time_per_step)
             self.meas_completed = True
             self.meas_running = False
 
@@ -841,21 +874,23 @@ class DataBackend:
         batch_dataframe : pandas.DataFrame
             The pandas Dataframe with the measurement parameters from the batch mode grid.
         """
+        batch_dataframe = batch_dataframe.dropna()
         for row_index in range(0, len(batch_dataframe)):
             if self.meas_running:
                 start_ev = batch_dataframe["Start [eV]"][row_index]
+                if math.isnan(start_ev):
+                    break
                 end_ev = batch_dataframe["End [eV]"][row_index]
                 step_ev = batch_dataframe["Step [eV]"][row_index]
                 time_per_step = batch_dataframe["Time [s/eV]"][row_index]
                 pass_no = batch_dataframe["Passes"][row_index]
-                if math.isnan(start_ev):
-                    break
+
                 self.runSingleMeasurement(
                     start_ev, end_ev, step_ev, time_per_step, pass_no, row_index + 1, self.batch_pass_no, True
                 )
         self.current_progress = 100
         self.remaining_time = 0.0
-        time.sleep(1)
+        time.sleep(time_per_step)
         self.meas_running = False
         self.meas_completed = True
         self.batch_pass_no = 1
@@ -881,6 +916,65 @@ class DataBackend:
         self.meas_interrupted = True
         self.meas_running = False
 
+    def sendTx400RemoteSignal(self, filament: int, emission_mode: bool, current_value: float) -> None:
+        """Send Remote signal to the TX400 X-ray source.
+
+        Parameters
+        ----------
+        filament : int
+            Integer indicating the filament to be selected. 0 for Mg, 1 for Al.
+        emission_mode : bool
+            Boolean indicating if the emission control is selected or not.
+        current_value : float
+            Float value indicating the filament / emission current to be set for the TX400 X-ray source in A/mA.
+        """
+        self.u6_labjack.setDOState(0, filament)  # Set the filament selection
+        self.tx400_filament_2_selected = filament
+        if emission_mode:
+            self.u6_labjack.setDOState(1, 1)
+            self.tx400_emission_selected = True
+            self.u6_labjack.getFeedback(
+                u6.DAC0_8(self.u6_labjack.voltageToDACBits(current_value * 5 / 20, 0))
+            )  # Set the emission current
+            self.tx400_current_value = current_value
+        else:
+            self.u6_labjack.setDOState(1, 0)
+            self.tx400_emission_selected = False
+            self.u6_labjack.getFeedback(
+                u6.DAC0_8(self.u6_labjack.voltageToDACBits(current_value * 5 / 5, 0))
+            )  # Set the filament current
+            self.tx400_current_value = current_value
+
+    def sl600Inhibit(self, inhibit: bool) -> None:
+        """Inhibit the SL600 X-ray source.
+
+        Parameters
+        ----------
+        inhibit : bool
+            Boolean indicating if the SL600 X-ray source should be inhibited or not.
+
+        """
+        if inhibit:
+            self.sl600_inhibited = True
+            self.u6_labjack.setDOState(3, 1)
+        else:
+            self.sl600_inhibited = False
+            self.u6_labjack.setDOState(3, 0)
+
+    def sl600GetParams(self) -> tuple[float, float]:
+        """Get the HV and mA values from the SL600 X-ray source.
+
+        Returns
+        -------
+        tuple[float, float]
+            A tuple containing the HV in kV and mA values of the SL600 X-ray source.
+        """
+        hv = self.u6_labjack.getAIN(4)
+        mA = self.u6_labjack.getAIN(5)
+        hv = round(hv, 2)
+        mA = round(mA, 2)
+        return hv, mA
+
     def onClose(self) -> None:
         """Method fired when the Shutdown App button is clicked."""
         os._exit(0)
@@ -902,17 +996,17 @@ app = Dash(
 color_mode_switch = html.Span(
     [
         dbc.Label(
-            className="fa fa-moon",
+            class_name="fa fa-moon",
             html_for="switch",
         ),
         dbc.Switch(
             id="switch",
             value=True,
-            className="d-inline-block ms-1",
+            class_name="d-inline-block ms-1",
             persistence=True,
         ),
         dbc.Label(
-            className="fa fa-sun",
+            class_name="fa fa-sun",
             html_for="switch",
         ),
     ],
@@ -944,14 +1038,15 @@ save_file_modal = dbc.Modal(
                 type="text",
                 value="xps_data",
                 pattern=r'[^.\\/:*?"<>|]+',
-                # title=r'Filename should not contain .\\/:*?"\'<>|',
+                required=True,
+                # title="Filename should not contain .\\/:*?\"'<>|",
             ),
         ),
         dbc.ModalFooter([
             dbc.Button(
                 "Save",
                 id="confirm-save",
-                className="ms-auto",
+                class_name="ms-auto",
                 n_clicks=0,
                 outline=True,
                 color="success",
@@ -959,7 +1054,7 @@ save_file_modal = dbc.Modal(
             dbc.Button(
                 "Cancel",
                 id="cancel-save",
-                className="ms-auto",
+                class_name="ms-auto",
                 n_clicks=0,
                 outline=True,
                 color="danger",
@@ -968,8 +1063,149 @@ save_file_modal = dbc.Modal(
     ],
     id="modal",
     is_open=False,
+    centered=True,
+    backdrop="static",
 )
 """Dash modal to appear whenever the save button is clicked."""
+
+remote_xray_operate_modal = dbc.Modal(
+    [
+        dbc.ModalHeader(dbc.ModalTitle("X-ray Source Control")),
+        dbc.ModalBody([
+            dbc.Card(
+                [
+                    html.H4("TX400", className="card-title m-3"),
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupText("Mg"),
+                            dbc.InputGroupText(dbc.Switch(id="filament-select-toggle")),
+                            dbc.InputGroupText("Al"),
+                        ],
+                        class_name="justify-content-center",
+                    ),
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupText("Filament Current"),
+                            dbc.InputGroupText(dbc.Switch(id="current-control-mode")),
+                            dbc.InputGroupText("Emission Control"),
+                        ],
+                        class_name="justify-content-center",
+                    ),
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupText("Current"),
+                            dbc.Input(
+                                type="number",
+                                min=0,
+                                max=2.30,
+                                step=0.05,
+                                value=0.0,
+                                id="current-value",
+                                style={"max-width": "fit-content"},
+                            ),
+                            dbc.InputGroupText("A", id="current-unit"),
+                        ],
+                        class_name="justify-content-center",
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                dbc.Button(
+                                    "Send Remote Signal",
+                                    color="danger",
+                                    outline=True,
+                                    id="remote-xray-source-tx400-send",
+                                    disabled=False,
+                                ),
+                                class_name="d-grid gap-2 col-6 mx-auto",
+                            ),
+                        ],
+                        class_name="button-rows mt-3",
+                    ),
+                ],
+                class_name="mb-3",
+            ),
+            dbc.Card(
+                [
+                    html.H4("SL600", className="card-title m-3"),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                dbc.Label(
+                                    "HV [kV]",
+                                    class_name="label-center-disp-mod",
+                                ),
+                                class_name="justify-content-center",
+                            ),
+                            dbc.Col(
+                                dbc.Label(
+                                    "milliamperes [mA]",
+                                    class_name="label-center-disp-mod",
+                                ),
+                                class_name="justify-content-center",
+                            ),
+                        ],
+                        class_name="m-3 mt-0 mb-0",
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                dbc.Input(
+                                    id="sl600-hv-disp",
+                                    readonly=True,
+                                    style={"max-width": "50%"},
+                                    class_name="m-auto display-input",
+                                ),
+                                class_name="justify-content-center",
+                            ),
+                            dbc.Col(
+                                dbc.Input(
+                                    id="sl600-mA-disp",
+                                    readonly=True,
+                                    style={"max-width": "50%"},
+                                    class_name="m-auto display-input",
+                                ),
+                                class_name="justify-content-center",
+                            ),
+                        ],
+                        class_name="m-3 mb-0 mt-0",
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                dbc.Button(
+                                    "Inhibit HV",
+                                    color="danger",
+                                    outline=True,
+                                    id="remote-xray-source-inhibit",
+                                    disabled=False,
+                                ),
+                                class_name="d-grid gap-2 col-6 mx-auto",
+                            ),
+                        ],
+                        class_name="button-rows mt-3",
+                    ),
+                ],
+                class_name="mb-3",
+            ),
+        ]),
+        dbc.ModalFooter([
+            dbc.Button(
+                "Cancel",
+                id="cancel-remote-xray",
+                class_name="ms-auto",
+                n_clicks=0,
+                outline=True,
+                color="success",
+            ),
+        ]),
+    ],
+    id="xray-modal",
+    is_open=False,
+    centered=True,
+    backdrop="static",
+)
+"""Dash modal to appear whenever the Remote X-ray Source button is clicked."""
 
 
 def generate_single_mode_tab_content(
@@ -1062,6 +1298,9 @@ def generate_single_mode_tab_content(
                         id="time-step",
                         value=time_step,
                         min=1.0,
+                    ),
+                    dbc.InputGroupText(
+                        "s",
                     ),
                 ],
             ),
@@ -1281,29 +1520,73 @@ status_displays = [
             dbc.Input(
                 id="kin-energy-disp",
                 readonly=True,
+                class_name="display-input",
             )
         ),
         dbc.Col(
             dbc.Input(
                 id="binding-energy-disp",
                 readonly=True,
+                class_name="display-input",
             )
         ),
         dbc.Col(
             dbc.Input(
                 id="time-elapsed-disp",
                 readonly=True,
+                class_name="display-input",
             )
         ),
         dbc.Col(
             dbc.Input(
                 id="time-remain-disp",
                 readonly=True,
+                class_name="display-input",
             )
         ),
     ]),
 ]
 """A list with the child entries to render the status displays of the current binding energy, current kinetic energy, elapsed time and remaining time of the measurement."""
+
+control_buttons_layout_1 = dbc.Row(
+    [
+        dbc.Col(
+            dbc.Button(
+                "Start",
+                color="primary",
+                outline=True,
+                id="start-click",
+            ),
+            class_name="d-grid gap-2 col-6 mx-auto",
+        ),
+        dbc.Col(
+            dbc.Button(
+                "Stop!",
+                color="warning",
+                outline=True,
+                id="stop-click",
+                disabled=True,
+            ),
+            class_name="d-grid gap-2 col-6 mx-auto",
+        ),
+    ],
+    class_name="button-rows",
+)
+control_buttons_layout_2 = dbc.Row(
+    [
+        dbc.Col(
+            dbc.Button(
+                "Save Plot / Results",
+                color="success",
+                outline=True,
+                id="save-results",
+                disabled=True,
+            ),
+            class_name="d-grid gap-2 col-6 mx-auto",
+        ),
+    ],
+    class_name="button-rows",
+)
 
 
 # mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
@@ -1319,9 +1602,10 @@ app.layout = html.Div(
         dcc.Store(id="start-mode", data="single"),
         dcc.Store("batch-seq-dataframe", data=blank_data.to_dict("records")),
         dcc.Interval(id="progress-interval", interval=300, disabled=True),
-        dcc.Interval(id="graph-interval-component", interval=300, disabled=False),
+        dcc.Interval(id="xray-modal-interval-component", interval=1000, disabled=True),
         dcc.Interval(id="interval-component", interval=300, disabled=False),
         save_file_modal,
+        remote_xray_operate_modal,
         dbc.Row(
             [
                 dbc.Col(
@@ -1346,44 +1630,24 @@ app.layout = html.Div(
                         color_mode_switch,
                         card,
                         source_selection,
+                        control_buttons_layout_1,
+                        control_buttons_layout_2,
                         dbc.Row(
-                            [
-                                dbc.Col(
-                                    dbc.Button(
-                                        "Start",
-                                        color="primary",
-                                        outline=True,
-                                        id="start-click",
-                                    ),
-                                    className="d-grid gap-2 col-6 mx-auto",
-                                ),
-                                dbc.Col(
-                                    dbc.Button(
-                                        "Stop!",
-                                        color="warning",
-                                        outline=True,
-                                        id="stop-click",
-                                        disabled=True,
-                                    ),
-                                    className="d-grid gap-2 col-6 mx-auto",
-                                ),
-                            ],
-                            class_name="button-rows",
+                            dbc.Switch(
+                                id="save-on-complete-switch",
+                                label="Save on completion?",
+                                value=False,
+                            ),
                         ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    dbc.Button(
-                                        "Save Plot / Results",
-                                        color="success",
-                                        outline=True,
-                                        id="save-results",
-                                        disabled=True,
-                                    ),
-                                    className="d-grid gap-2 col-6 mx-auto",
-                                ),
-                            ],
-                            class_name="button-rows",
+                        dbc.Input(
+                            placeholder="Filename to save....",
+                            size="md",
+                            class_name="mb-3",
+                            id="save-on-complete-filename",
+                            required=True,
+                            disabled=True,
+                            pattern=r'[^.\\/:*?"<>|]+',
+                            # title="Filename should not contain .\\/:*?\"'<>|",
                         ),
                         dbc.Progress(
                             id="progress-bar",
@@ -1397,13 +1661,28 @@ app.layout = html.Div(
                             [
                                 dbc.Col(
                                     dbc.Button(
+                                        "Remote Operate X-ray Source",
+                                        color="danger",
+                                        outline=True,
+                                        id="remote-xray-source-modal",
+                                        disabled=False,
+                                    ),
+                                    class_name="d-grid gap-2 col-6 mx-auto",
+                                ),
+                            ],
+                            class_name="button-rows mt-3",
+                        ),
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    dbc.Button(
                                         "Shutdown App!",
                                         color="danger",
                                         outline=True,
                                         id="shutdown-app",
                                         disabled=False,
                                     ),
-                                    className="d-grid gap-2 col-6 mx-auto",
+                                    class_name="d-grid gap-2 col-6 mx-auto",
                                 ),
                             ],
                             class_name="shutdown-button-rows",
@@ -1453,6 +1732,31 @@ clientside_callback(
     # prevent_initial_call=True,
 )
 """Method called on the clientside when the theme switch is toggled."""
+
+# ********************************************************************************
+
+
+@app.callback(
+    Output("save-on-complete-filename", "disabled"),
+    Input("save-on-complete-switch", "value"),
+    prevent_initial_call=True,
+)
+def toggleSaveOnCompleteInput(switch_value: bool) -> bool:
+    """Method to toggle the save on complete input field based on the switch value.
+
+    Parameters
+    ----------
+    switch_value : bool
+        Boolean indicating the state of the save on complete switch. True if the switch is ON, False if is is OFF.
+
+    Returns
+    -------
+    bool
+        Returns True if the switch is OFF, False if it is ON. This is used to enable or disable the input field for the filename to save on completion.
+    """
+
+    return not switch_value
+
 
 # ********************************************************************************
 
@@ -1738,6 +2042,16 @@ def cancelOrStopMeasurement(n: int) -> None:
         allow_duplicate=True,
     ),
     Output(
+        "interval-component",
+        "interval",
+        allow_duplicate=True,
+    ),
+    Output(
+        "progress-interval",
+        "interval",
+        allow_duplicate=True,
+    ),
+    Output(
         "graph",
         "figure",
         allow_duplicate=True,
@@ -1763,7 +2077,7 @@ def startMeasurement(
     batch_dataframe: dict,
     source_mg: bool,
     switch_on: bool,
-) -> tuple[bool, bool, bool, go.Figure]:
+) -> tuple[bool, bool, bool, int, int, go.Figure]:
     """Method called after the initial preparation of the measurement was done.
 
     Parameters
@@ -1789,19 +2103,22 @@ def startMeasurement(
 
     Returns
     -------
-    tuple[bool, bool, bool, plotly.graph_objects.Figure]
-        Boolean indicating if the measurement is running, boolean if the interval-component is to be disabled, boolean if the progress-interval is to be disabled, the plotly Figure object, respectively.
+    tuple[bool, bool, bool, int, int, plotly.graph_objects.Figure]
+        Boolean indicating if the measurement is running, boolean if the interval-component is to be disabled, boolean if the progress-interval is to be disabled, the interval ms for the interval-component, the interval ms for the progress-interval, the plotly Figure object, respectively.
     """
     batch_sett = pd.DataFrame(batch_dataframe)
     dark_theme = False if switch_on else True
+    interval_time = 1000
     if mode in "single":
         data_backend.startMeasurement(start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg)
         fig = reset_fig(theme_dark=dark_theme)
+        interval_time = int(time_step * 1000)
     else:
         data_backend.startMeasurement(start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg, True)
         fig = reset_fig(theme_dark=dark_theme, batch_mode=True)
+        interval_time = batch_sett["Time [s/eV]"].min() * 1000
 
-    return True, False, False, fig
+    return True, False, False, interval_time, 300, fig
 
 
 # ********************************************************************************
@@ -1839,12 +2156,28 @@ def startMeasurement(
         "disabled",
         allow_duplicate=True,
     ),
+    Output(
+        "save-on-complete-switch",
+        "disabled",
+        allow_duplicate=True,
+    ),
+    Output(
+        "save-on-complete-filename",
+        "disabled",
+        allow_duplicate=True,
+    ),
+    Output(
+        "remote-xray-source-modal",
+        "disabled",
+        allow_duplicate=True,
+    ),
     Input("check-running", "data"),
+    State("save-on-complete-switch", "value"),
     prevent_initial_call=True,
 )
 def checkRunningProgress(
-    running: bool,
-) -> tuple[bool, bool, bool, str, bool, bool, bool]:
+    running: bool, save_filename_switch: bool
+) -> tuple[bool, bool, bool, str, bool, bool, bool, bool, bool, bool]:
     """Method called when the check-running boolean in the Store is updated.
 
     Parameters
@@ -1852,10 +2185,13 @@ def checkRunningProgress(
     running : bool
         Boolean indicating if the measurement is running.
 
+    save_filename_switch : bool
+        Boolean indicating if the save on complete switch is ON or OFF.
+
     Returns
     -------
-    tuple[bool, bool, bool, str, bool, bool, bool]
-        The boolean indicating if the start button is disabled, boolean indicating if the stop button is disabled, boolean indicating if the shutdown button is disabled, the class name for the Card component, boolean indicating if the graph interval is disabled, boolean indicating if the save button is disabled, boolean indicating if the select source switch is disabled, respectively.
+    tuple[bool, bool, bool, str, bool, bool, bool, bool, bool]
+        The boolean indicating if the start button is disabled, boolean indicating if the stop button is disabled, boolean indicating if the shutdown button is disabled, the class name for the Card component, boolean indicating if the graph interval is disabled, boolean indicating if the save button is disabled, boolean indicating if the select source switch is disabled, boolean indicating if the save on completion switch is disabled, boolean indicating if the save on complete filename is disabled, and the boolean indicating if the remote operate X-ray button is disabled respectively.
     """
     if running:
         return (
@@ -1866,6 +2202,9 @@ def checkRunningProgress(
             False,  # disable the graph interval component
             True,  # disable the save results button
             True,  # disable the source select switch
+            True,  # disable the save on complete switch
+            True,  # disable the save on complete input field
+            True,  # disable the remote operate X-ray button
         )
     else:
         return (
@@ -1876,6 +2215,9 @@ def checkRunningProgress(
             True if data_backend.meas_completed else False,  # disable the graph interval component
             False,  # disable the save results button
             False,  # disable the source select switch
+            False,  # disable the save on complete switch
+            not save_filename_switch,  # disable the save on complete input field
+            False,  # disable the remote operate X-ray button
         )
 
 
@@ -1883,16 +2225,11 @@ def checkRunningProgress(
 
 
 @callback(
-    Output("progress-bar", "value"),
     Output("check-running", "data"),
-    Output("kin-energy-disp", "value"),
-    Output("binding-energy-disp", "value"),
-    Output("time-elapsed-disp", "value"),
-    Output("time-remain-disp", "value"),
     Input("progress-interval", "n_intervals"),
     prevent_initial_call=True,
 )
-def updateProgress(n: int) -> tuple[int, bool, float, float, float, float]:
+def updateProgress(n: int) -> bool:
     """Method called by the progress-interval interval component on firing.
 
     Parameters
@@ -1902,23 +2239,17 @@ def updateProgress(n: int) -> tuple[int, bool, float, float, float, float]:
 
     Returns
     -------
-    tuple[int, bool, float, float, float, float]
+    bool
         Integer for the current value of the progress bar, boolean indicating if the measurement is running, current kinetic energy value of the measurement, current binding energy value of the measurement, the elapsed time of the measurement, the remaining time of the measurement, respectively.
     """
-    return (
-        data_backend.current_progress,
-        data_backend.meas_running,
-        data_backend.current_kinetic_energy,
-        data_backend.current_binding_energy,
-        data_backend.elapsed_time,
-        data_backend.remaining_time,
-    )
+    return data_backend.meas_running
 
 
 # ********************************************************************************
 
 
 @callback(
+    Output("progress-bar", "value"),
     Output(
         "graph",
         "figure",
@@ -1929,10 +2260,14 @@ def updateProgress(n: int) -> tuple[int, bool, float, float, float, float]:
         "disabled",
         allow_duplicate=True,
     ),
+    Output("kin-energy-disp", "value"),
+    Output("binding-energy-disp", "value"),
+    Output("time-elapsed-disp", "value"),
+    Output("time-remain-disp", "value"),
     Input("interval-component", "n_intervals"),
     prevent_initial_call=True,
 )
-def updateGraphLive(n: int) -> tuple[Patch, bool]:
+def updateGraphLive(n: int) -> tuple[int, Patch, bool, float, float, float, float]:
     """Method that is called in periodic intervals.
 
     Parameters
@@ -1942,15 +2277,23 @@ def updateGraphLive(n: int) -> tuple[Patch, bool]:
 
     Returns
     -------
-    tuple[dash.Patch, bool]
-        The patch for the figure object and the boolean indicating if the interval-component is to be disabled.
+    tuple[int, dash.Patch, bool, float, float, float, float]
+        Integer for the current value of the progress bar, the patch for the figure object and the boolean indicating if the interval-component is to be disabled, current kinetic energy value of the measurement, current binding energy value of the measurement, the elapsed time of the measurement, the remaining time of the measurement, respectively.
     """
     patched_figure = Patch()
     old_fig = data_backend.plot_fig
     data = old_fig.to_dict()["data"]
     patched_figure["data"] = data
 
-    return patched_figure, not data_backend.meas_running
+    return (
+        data_backend.current_progress,
+        patched_figure,
+        not data_backend.meas_running,
+        data_backend.current_kinetic_energy,
+        data_backend.current_binding_energy,
+        data_backend.elapsed_time,
+        data_backend.remaining_time,
+    )
 
 
 # *********************************************************************************
@@ -1996,30 +2339,45 @@ def confirmFileSaveModalOpen(n1: int, n2: int, is_open: bool) -> bool:
     Output("confirm-save", "disabled"),
     Output("save-as-file", "valid"),
     Output("save-as-file", "invalid"),
+    Output("save-on-complete-filename", "valid"),
+    Output("save-on-complete-filename", "invalid"),
     Input("save-as-file", "value"),
+    Input("save-on-complete-filename", "value"),
     prevent_initial_call=True,
 )
-def checkFilenameValidity(filename: str) -> tuple[bool, bool, bool]:
+def checkFilenameValidity(filename1: str, filename2: str) -> tuple[bool, bool, bool, bool, bool]:
     """Method to check filename validity.
 
     Parameters
     ----------
-    filename : str
+    filename1 : str
+        Name of the file to be saved as.
+
+    filename2 : str
         Name of the file to be saved as.
 
     Returns
     -------
-    tuple[bool, bool, bool]
-        Boolean to disabled the save button in the modal, enable valid property of the input field, enable invalid property of the input field respectively.
+    tuple[bool, bool, bool, bool, bool]
+        Boolean to disable the save button in the modal, enable valid property of both the input field, enable invalid property of both the input field respectively.
     """
+
+    filename_context_id = ctx.triggered_id
+
+    filename = filename1
+
+    if filename_context_id == "save-on-complete-filename":
+        filename = filename2
+
     pattern = r'[^.\\/:*?"\'<>|]+'
     match = re.fullmatch(pattern, filename)
     if match is not None:
-        return False, True, False
+        return False, True, False, True, False
     else:
-        return True, False, True
-    
-# ********************************************************************************  
+        return True, False, True, False, True
+
+
+# ********************************************************************************
 
 
 @callback(
@@ -2029,39 +2387,253 @@ def checkFilenameValidity(filename: str) -> tuple[bool, bool, bool]:
         allow_duplicate=True,
     ),
     Input("confirm-save", "n_clicks"),
+    Input("start-click", "disabled"),
     State("graph", "figure"),
     State("save-as-file", "value"),
+    State("save-on-complete-switch", "value"),
+    State("save-on-complete-filename", "value"),
     prevent_initial_call=True,
 )
-def saveDataAndPlot(n_clicks: int, ex_fig: dict, filename: str) -> bool:
+def saveDataAndPlot(
+    n_clicks: int,
+    start_disabled: bool,
+    ex_fig: dict,
+    filename: str,
+    save_on_complete_switch: bool,
+    save_on_complete_filename: str,
+) -> bool | dash._callback.NoUpdate:
     """Method called when Save Results button is clicked.
 
     Parameters
     ----------
     n_clicks : int
         Integer indicating the number of times the save-results button was clicked.
+    start_disabled : bool
+        Boolean indicating if the start button is disabled. If it is disabled, the measurement is running.
     ex_fig : dict
         The dictionary with the figure object of the graph area in the Dash app.
     filename : str
         The filename to save the results and plot as.
+    save_on_complete_switch : bool
+        Boolean indicating if the save on complete switch is ON or OFF.
+    save_on_complete_filename : str
+        The filename to save the results and plot as if the save on complete switch is ON.
 
     Returns
     -------
-    bool
+    bool | dash._callback.NoUpdate
         The boolean to close the Modal.
     """
-    old_fig = go.Figure(ex_fig)
-    old_fig.write_html(
-        filename + ".html",
-        config=CONFIG,
-        include_plotlyjs="cdn",
-        include_mathjax="cdn",
-    )
-    data_backend.saveMeasurementData(filename)
-    return False
+    input_context = ctx.triggered_id
+    if input_context == "start-click":
+        if save_on_complete_switch and not start_disabled:
+            old_fig = go.Figure(ex_fig)
+            old_fig.write_html(
+                save_on_complete_filename + ".html",
+                config=CONFIG,
+                include_plotlyjs="cdn",
+                include_mathjax="cdn",
+            )
+            data_backend.saveMeasurementData(save_on_complete_filename)
+        return no_update
+    else:
+        old_fig = go.Figure(ex_fig)
+        old_fig.write_html(
+            filename + ".html",
+            config=CONFIG,
+            include_plotlyjs="cdn",
+            include_mathjax="cdn",
+        )
+        data_backend.saveMeasurementData(filename)
+        return False
 
 
 # *********************************************************************************
+
+
+@callback(
+    Output(
+        "xray-modal",
+        "is_open",
+        allow_duplicate=True,
+    ),
+    Output("xray-modal-interval-component", "disabled"),
+    Input("remote-xray-source-modal", "n_clicks"),
+    Input("cancel-remote-xray", "n_clicks"),
+    State("xray-modal", "is_open"),
+    prevent_initial_call=True,
+)
+def toggleXraySourceModal(n1: int, n2: int, is_open: bool) -> tuple[bool, bool]:
+    """Method called when the Remote Operate X-ray Source button is clicked. It will open a Modal with the X-ray source controls.
+
+    Parameters
+    ----------
+    n1 : int
+        Integer holding the no. of clicks on the Remote Operate button.
+    n2 : int
+        Integer holding the number of clicks on the Cancel button in the Modal.
+    is_open : bool
+        Boolean indicating if the Modal is currently open.
+
+    Returns
+    -------
+    tuple[bool, bool]
+        Returns a tuple with a boolean indicating if the Modal is to be opened and a boolean indicating if the xray-modal-interval-component is to be disabled.
+    """
+    if n1 or n2:
+        return not is_open, is_open
+    return is_open, not is_open
+
+
+# ******************************************************************************
+
+
+@callback(
+    Output("sl600-hv-disp", "value"),
+    Output("sl600-mA-disp", "value"),
+    Input("xray-modal-interval-component", "n_intervals"),
+    prevent_initial_call=True,
+)
+def updateXraySourceHV(n: int) -> tuple[float, float]:
+    """Method called by the xray-modal-interval-component interval component on firing.
+
+    Parameters
+    ----------
+    n : int
+        The iteration of the update interval.
+
+    Returns
+    -------
+    tuple[float, float]
+        The present high voltage of the X-ray source and the current in mA.
+    """
+    hv, current = data_backend.sl600GetParams()
+    return hv, current
+
+
+# ******************************************************************************
+
+
+@callback(
+    Output("current-value", "max", allow_duplicate=True),
+    Output("current-unit", "children", allow_duplicate=True),
+    Input("current-control-mode", "value"),
+    prevent_initial_call=True,
+)
+def toggleXraySourceCurrentModeValue(emission: bool) -> tuple[float, str]:
+    if emission:
+        return 20.0, "mA"
+    else:
+        return 2.30, "A"
+
+
+# ******************************************************************************
+
+
+@callback(
+    Output("remote-xray-source-tx400-send", "disabled", allow_duplicate=True),
+    Output("remote-xray-source-inhibit", "disabled", allow_duplicate=True),
+    Input("current-value", "value"),
+    Input("current-control-mode", "value"),
+    prevent_initial_call=True,
+)
+def validateXraySourceCurrentParams(current_value: float, emission: bool) -> tuple[bool, bool]:
+    """Method called to validate the current value and control mode of the X-ray source.
+
+    Parameters
+    ----------
+    current_value : float
+        The current value to be set for the X-ray source.
+    emission : bool
+        Boolean indicating the current control mode. True if emission mode is selected, False if current mode is selected.
+
+    Returns
+    -------
+    tuple[bool, bool]
+        Returns a tuple with a boolean indicating if the Remote send button is disabled and a boolean indicating if the Inhibit button is disabled.
+    """
+    if not emission and current_value > 2.30:
+        return True, True
+    else:
+        if current_value > 0.0:
+            return False, True
+        else:
+            return False, False
+
+
+# ******************************************************************************
+
+
+@callback(
+    Output("remote-xray-source-inhibit", "disabled", allow_duplicate=True),
+    Output("remote-xray-source-tx400-send", "disabled", allow_duplicate=True),
+    Input("remote-xray-source-tx400-send", "n_clicks"),
+    State("filament-select-toggle", "value"),
+    State("current-control-mode", "value"),
+    State("current-value", "value"),
+    prevent_initial_call=True,
+)
+def sendXraySourceCommand(n: int, filament_2: bool, emission: bool, current_value: float) -> tuple[bool, bool]:
+    """Method called when the Remote send button in the X-ray source modal is clicked.
+
+    Parameters
+    ----------
+    n : int
+        Integer indicating the number of times the Remote send button was clicked.
+    filament_2 : bool
+        Boolean indicating if the filament 2 is selected. Filament 2 is Al.
+    emission : bool
+        Boolean indicating the current control mode. True if emission mode is selected, False if current mode is selected.
+    current_value : float
+        The current value to be set for th X-ray source.
+
+    Returns
+    -------
+    tuple[bool, bool]
+        Returns a tuple with a boolean indicating if the Inhibit button is disabled and a boolean indicating if the Remote send button is disabled.
+    """
+
+    if current_value > 0.0:
+        if filament_2:
+            data_backend.sendTx400RemoteSignal(1, emission, current_value)
+        else:
+            data_backend.sendTx400RemoteSignal(0, emission, current_value)
+        return True, False
+    else:
+        return False, True
+
+
+# *******************************************************************************
+
+
+@callback(
+    Output("remote-xray-source-tx400-send", "disabled", allow_duplicate=True),
+    Output("remote-xray-source-inhibit", "color"),
+    Input("remote-xray-source-inhibit", "n_clicks"),
+    prevent_initial_call=True,
+)
+def inhibitXrayHV(n: int) -> tuple[bool, str]:
+    """Method called when the Inhibit button in the X-ray source modal is clicked.
+
+    Parameters
+    ----------
+    n : int
+        Integer indicating the number of times the Inhibit button was clicked.
+
+    Returns
+    -------
+    tuple[bool, str]
+        Returns a tuple with a boolean indicating if the Remote send button is disabled and a string indicating the color of the Inhibit button.
+    """
+    if data_backend.sl600_inhibited:
+        data_backend.sl600Inhibit(False)
+        return False, "danger"
+    else:
+        data_backend.sl600Inhibit(True)
+        return True, "success"
+
+
+# ******************************************************************************
 
 
 @callback(
