@@ -11,6 +11,13 @@ def DAC1_8(volt_bits):
 def DAC0_8(volt_bits):
     return 'dac0'
 
+def DAC1_16(volt_bits):
+    return 'dac1'
+
+def DAC0_16(volt_bits):
+    return 'dac0'
+
+
 def Counter0(Reset: bool = False):
     return 'counter_zero' if Reset else 'counter'
 

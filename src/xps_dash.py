@@ -507,7 +507,7 @@ class DataBackend:
         self.u6_labjack.getCalibrationData()
         self.u6_labjack.configIO(EnableCounter0=True)
         # ljud.eDAC(self.u6_labjack, 1, 3)  # Set the reference voltage for the MAX5216 DAC
-        self.u6_labjack.getFeedback(u6.DAC1_8(self.u6_labjack.voltageToDACBits(3, 1)))
+        self.u6_labjack.getFeedback(u6.DAC1_16(self.u6_labjack.voltageToDACBits(3, 1)))
         self.labjack_connect = True
 
     def bindingEnergyToVolt(self, binding_energy: float) -> float:
@@ -557,7 +557,7 @@ class DataBackend:
             MOSIPinNum=self.U6_MOSI_PIN_NUM,
         )
         # Set the voltage at DAC0 of the Labjack for comparison with MAX5216.
-        self.u6_labjack.getFeedback(u6.DAC0_8(self.u6_labjack.voltageToDACBits(volt, 0)))
+        # self.u6_labjack.getFeedback(u6.DAC0_16(self.u6_labjack.voltageToDACBits(volt, 0)))
 
     def startMeasurement(
         self,
@@ -928,20 +928,20 @@ class DataBackend:
         current_value : float
             Float value indicating the filament / emission current to be set for the TX400 X-ray source in A/mA.
         """
-        self.u6_labjack.setDOState(0, filament)  # Set the filament selection
+        self.u6_labjack.setDOState(5, filament)  # Set the filament selection
         self.tx400_filament_2_selected = filament
         if emission_mode:
-            self.u6_labjack.setDOState(1, 1)
+            self.u6_labjack.setDOState(6, 1)
             self.tx400_emission_selected = True
             self.u6_labjack.getFeedback(
-                u6.DAC0_8(self.u6_labjack.voltageToDACBits(current_value * 5 / 20, 0))
+                u6.DAC0_16(self.u6_labjack.voltageToDACBits(current_value * 5 / 20, 0))
             )  # Set the emission current
             self.tx400_current_value = current_value
         else:
-            self.u6_labjack.setDOState(1, 0)
+            self.u6_labjack.setDOState(6, 0)
             self.tx400_emission_selected = False
             self.u6_labjack.getFeedback(
-                u6.DAC0_8(self.u6_labjack.voltageToDACBits(current_value * 5 / 5, 0))
+                u6.DAC0_16(self.u6_labjack.voltageToDACBits(current_value * 5 / 5, 0))
             )  # Set the filament current
             self.tx400_current_value = current_value
 
@@ -956,10 +956,10 @@ class DataBackend:
         """
         if inhibit:
             self.sl600_inhibited = True
-            self.u6_labjack.setDOState(3, 1)
+            self.u6_labjack.setDOState(7, 1)
         else:
             self.sl600_inhibited = False
-            self.u6_labjack.setDOState(3, 0)
+            self.u6_labjack.setDOState(7, 0)
 
     def sl600GetParams(self) -> tuple[float, float]:
         """Get the HV and mA values from the SL600 X-ray source.
@@ -1601,6 +1601,8 @@ app.layout = html.Div(
         dcc.Store("meas-passes-value", data=1),
         dcc.Store(id="start-mode", data="single"),
         dcc.Store("batch-seq-dataframe", data=blank_data.to_dict("records")),
+        dcc.Store("xray-source-command-clicked", data=False),
+        dcc.Store("xray-source-inhibit-clicked", data=False),
         dcc.Interval(id="progress-interval", interval=300, disabled=True),
         dcc.Interval(id="xray-modal-interval-component", interval=1000, disabled=True),
         dcc.Interval(id="interval-component", interval=300, disabled=False),
@@ -2491,24 +2493,67 @@ def toggleXraySourceModal(n1: int, n2: int, is_open: bool) -> tuple[bool, bool]:
 @callback(
     Output("sl600-hv-disp", "value"),
     Output("sl600-mA-disp", "value"),
+    Output("xray-source-command-clicked", "data", allow_duplicate=True),
+    Output("xray-source-inhibit-clicked", "data", allow_duplicate=True),
     Input("xray-modal-interval-component", "n_intervals"),
+    State("filament-select-toggle", "value"),
+    State("current-control-mode", "value"),
+    State("current-value", "value"),
+    State("xray-source-command-clicked", "data"),
+    State("xray-source-inhibit-clicked", "data"),
     prevent_initial_call=True,
 )
-def updateXraySourceHV(n: int) -> tuple[float, float]:
+def updateXraySourceHVandCurrent(
+    n: int,
+    filament_2: bool,
+    emission: bool,
+    current_value: float,
+    send_command_clicked: bool,
+    source_inhibit_clicked: bool,
+) -> tuple[
+    float | dash._callback.NoUpdate,
+    float | dash._callback.NoUpdate,
+    bool | dash._callback.NoUpdate,
+    bool | dash._callback.NoUpdate,
+]:
     """Method called by the xray-modal-interval-component interval component on firing.
 
     Parameters
     ----------
     n : int
         The iteration of the update interval.
+    filament_2 : bool
+        Boolean indicating if the filament 2 is selected. Filament 2 is Al.
+    emission : bool
+        Boolean indicating the current control mode. True if emission mode is selected, False if current mode is selected.
+    current_value : float
+        The current value to be set for th X-ray source.
+    send_command_clicked : bool
+        The boolean indicating if the send X-ray source command was clicked.
 
     Returns
     -------
-    tuple[float, float]
-        The present high voltage of the X-ray source and the current in mA.
+    tuple[float, float, bool | NoUpdate]
+        The present high voltage of the X-ray source and the current in mA, change the boolean state of the command-clicked store element, and change the boolean state of the inhibit-clicked store element.
     """
+    if source_inhibit_clicked:
+        if data_backend.sl600_inhibited:
+            data_backend.sl600Inhibit(False)
+        else:
+            data_backend.sl600Inhibit(True)
+
+        return no_update, no_update, no_update, False
+    if send_command_clicked:
+        if filament_2:
+            data_backend.sendTx400RemoteSignal(1, emission, current_value)
+        else:
+            data_backend.sendTx400RemoteSignal(0, emission, current_value)
+
+        return no_update, no_update, False, no_update
+
     hv, current = data_backend.sl600GetParams()
-    return hv, current
+
+    return hv, current, no_update, no_update
 
 
 # ******************************************************************************
@@ -2521,6 +2566,18 @@ def updateXraySourceHV(n: int) -> tuple[float, float]:
     prevent_initial_call=True,
 )
 def toggleXraySourceCurrentModeValue(emission: bool) -> tuple[float, str]:
+    """Method called when the current control mode is toggled in the modal.
+
+    Parameters
+    ----------
+    emission : bool
+        Boolean indicating if the emission mode is selected.
+
+    Returns
+    -------
+    tuple[float, str]
+        A tuple with the updated max value to the current input field and the new unit to be used for the current input field.
+    """
     if emission:
         return 20.0, "mA"
     else:
@@ -2566,39 +2623,31 @@ def validateXraySourceCurrentParams(current_value: float, emission: bool) -> tup
 
 @callback(
     Output("remote-xray-source-inhibit", "disabled", allow_duplicate=True),
-    Output("remote-xray-source-tx400-send", "disabled", allow_duplicate=True),
+    Output("xray-source-command-clicked", "data", allow_duplicate=True),
     Input("remote-xray-source-tx400-send", "n_clicks"),
     State("filament-select-toggle", "value"),
     State("current-control-mode", "value"),
     State("current-value", "value"),
     prevent_initial_call=True,
 )
-def sendXraySourceCommand(n: int, filament_2: bool, emission: bool, current_value: float) -> tuple[bool, bool]:
+def sendXraySourceCommand(n: int, current_value: float) -> tuple[bool, bool]:
     """Method called when the Remote send button in the X-ray source modal is clicked.
 
     Parameters
     ----------
     n : int
         Integer indicating the number of times the Remote send button was clicked.
-    filament_2 : bool
-        Boolean indicating if the filament 2 is selected. Filament 2 is Al.
-    emission : bool
-        Boolean indicating the current control mode. True if emission mode is selected, False if current mode is selected.
     current_value : float
         The current value to be set for th X-ray source.
 
     Returns
     -------
     tuple[bool, bool]
-        Returns a tuple with a boolean indicating if the Inhibit button is disabled and a boolean indicating if the Remote send button is disabled.
+        Returns a tuple with a boolean indicating if the Inhibit button is disabled, and a boolean indicating if the send X-ray source command button was clicked.
     """
 
     if current_value > 0.0:
-        if filament_2:
-            data_backend.sendTx400RemoteSignal(1, emission, current_value)
-        else:
-            data_backend.sendTx400RemoteSignal(0, emission, current_value)
-        return True, False
+        return True, True
     else:
         return False, True
 
@@ -2609,10 +2658,11 @@ def sendXraySourceCommand(n: int, filament_2: bool, emission: bool, current_valu
 @callback(
     Output("remote-xray-source-tx400-send", "disabled", allow_duplicate=True),
     Output("remote-xray-source-inhibit", "color"),
+    Output("xray-source-inhibit-clicked", "data", allow_duplicate=True),
     Input("remote-xray-source-inhibit", "n_clicks"),
     prevent_initial_call=True,
 )
-def inhibitXrayHV(n: int) -> tuple[bool, str]:
+def inhibitXrayHV(n: int) -> tuple[bool, str, bool]:
     """Method called when the Inhibit button in the X-ray source modal is clicked.
 
     Parameters
@@ -2622,15 +2672,13 @@ def inhibitXrayHV(n: int) -> tuple[bool, str]:
 
     Returns
     -------
-    tuple[bool, str]
-        Returns a tuple with a boolean indicating if the Remote send button is disabled and a string indicating the color of the Inhibit button.
+    tuple[bool, str, bool]
+        Returns a tuple with a boolean indicating if the Remote send button is disabled, a string indicating the color of the Inhibit button, and a boolean to store in the inhibit-clicked store element.
     """
     if data_backend.sl600_inhibited:
-        data_backend.sl600Inhibit(False)
-        return False, "danger"
+        return False, "danger", True
     else:
-        data_backend.sl600Inhibit(True)
-        return True, "success"
+        return True, "success", True
 
 
 # ******************************************************************************
