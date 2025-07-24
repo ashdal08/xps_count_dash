@@ -507,7 +507,7 @@ class DataBackend:
         self.u6_labjack.getCalibrationData()
         self.u6_labjack.configIO(EnableCounter0=True)
         # ljud.eDAC(self.u6_labjack, 1, 3)  # Set the reference voltage for the MAX5216 DAC
-        self.u6_labjack.getFeedback(u6.DAC1_16(self.u6_labjack.voltageToDACBits(3, 1)))
+        self.u6_labjack.getFeedback(u6.DAC1_16(self.u6_labjack.voltageToDACBits(3, 1, True)))
         self.labjack_connect = True
 
     def bindingEnergyToVolt(self, binding_energy: float) -> float:
@@ -557,7 +557,7 @@ class DataBackend:
             MOSIPinNum=self.U6_MOSI_PIN_NUM,
         )
         # Set the voltage at DAC0 of the Labjack for comparison with MAX5216.
-        # self.u6_labjack.getFeedback(u6.DAC0_16(self.u6_labjack.voltageToDACBits(volt, 0)))
+        # self.u6_labjack.getFeedback(u6.DAC0_16(self.u6_labjack.voltageToDACBits(volt, 0, True)))
 
     def startMeasurement(
         self,
@@ -1382,17 +1382,17 @@ def generate_batch_data_grid(dataframe: pd.DataFrame) -> list:
                     },
                     style_header={
                         "border": "1px solid var(--bs-border-color-translucent)",
-                        "border-top": "0px",
+                        "border-top": "none",
                         "background-color": "var(--bs-card-cap-bg)",
-                        "text-color": "var(--bs-body-color)",
-                        "whiteSpace": "normal",
+                        "color": "var(--bs-body-color)",
+                        "white-space": "normal",
                         "height": "auto",
-                        "lineHeight": "18px",
+                        "line-height": "18px",
                     },
                     style_data={
                         "border": "1px solid var(--bs-border-color-translucent)",
                         "background-color": "var(--bs-body-bg)",
-                        "text-color": "var(--bs-body-color)",
+                        "color": "var(--bs-body-color)",
                     },
                     style_data_conditional=[
                         {
@@ -1401,13 +1401,13 @@ def generate_batch_data_grid(dataframe: pd.DataFrame) -> list:
                             },
                             "backgroundColor": "var(--bs-focus-ring-color)",
                             "border": "1px solid var(--bs-primary)",
-                            "text-color": "var(--bs-body-color)",
+                            "color": "var(--bs-body-color)",
                         },
                         {
                             "if": {
                                 "column_id": " ",
                             },
-                            "border-left": "0px",
+                            "border-left": "none",
                         },
                     ],
                     style_cell={

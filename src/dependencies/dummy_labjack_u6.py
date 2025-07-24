@@ -72,7 +72,7 @@ class U6():
     def configU6(self):
         pass
     
-    def voltageToDACBits(self, voltage, dacNumber: int):
+    def voltageToDACBits(self, voltage, dacNumber: int, is16Bits: bool = False):
         if dacNumber:
             self.__dac_1 = voltage
         else:

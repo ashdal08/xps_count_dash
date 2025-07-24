@@ -1,5 +1,5 @@
 .input-group-text div p {
-  margin-bottom: 0px !important;
+  margin-bottom: none !important;
 }
 
 .dual-switch {
@@ -104,7 +104,7 @@ div:has(div > div > div > div.dash-spinner) > div.dash-graph {
 }
 
 #fitted-parameters-table p {
-  margin-bottom: 0px;
+  margin-bottom: none;
 }
 
 .form-check-label-mod-xps {
@@ -128,7 +128,7 @@ div:has(div > div > div > div.dash-spinner) > div.dash-graph {
 
 .label-center-mod {
   text-align: center;
-  margin-bottom: 0px;
+  margin-bottom: none;
   margin-right: 20px;
 }
 
@@ -170,7 +170,7 @@ div:has(div > div > div > div.dash-spinner) > div.dash-graph {
 
 .dash-fixed-row {
   margin-right: 10px !important;
-  margin-left: 0px !important;
+  margin-left: none !important;
 }
 
 .dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner th {
