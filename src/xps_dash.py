@@ -969,10 +969,10 @@ class DataBackend:
         tuple[float, float]
             A tuple containing the HV in kV and mA values of the SL600 X-ray source.
         """
-        hv = self.u6_labjack.getAIN(4)
-        mA = self.u6_labjack.getAIN(5)
-        hv = round(hv, 2)
-        mA = round(mA, 2)
+        hv = float(self.u6_labjack.getAIN(4))
+        mA = float(self.u6_labjack.getAIN(5))
+        hv = round(hv*15/10, 2)
+        mA = round(mA*40/10, 2)
         return hv, mA
 
     def onClose(self) -> None:
