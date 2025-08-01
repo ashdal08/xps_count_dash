@@ -18,8 +18,8 @@ import plotly.io as pio
 from gevent.pywsgi import WSGIServer
 import waitress
 
-import u6
-# from dependencies import dummy_labjack_u6 as u6
+# import u6
+from dependencies import dummy_labjack_u6 as u6
 
 from dash import (
     Dash,
@@ -512,9 +512,7 @@ class DataBackend:
         self.connectLabjack()
         self.plot_fig = reset_fig()
 
-        self.plot_file_name = "".join(
-            [os.getcwd(), "\\src\\dependencies\\", "plt_dat.html"]
-        )
+        self.plot_file_name = "".join([os.getcwd(), "\\src\\dependencies\\", "plt_dat.html"])
 
     def connectLabjack(self) -> None:
         """Connect to the Labjack U6 device."""
@@ -522,9 +520,7 @@ class DataBackend:
         self.u6_labjack.getCalibrationData()
         self.u6_labjack.configIO(EnableCounter0=True)
         # ljud.eDAC(self.u6_labjack, 1, 3)  # Set the reference voltage for the MAX5216 DAC
-        self.u6_labjack.getFeedback(
-            u6.DAC1_16(self.u6_labjack.voltageToDACBits(3, 1, True))
-        )
+        self.u6_labjack.getFeedback(u6.DAC1_16(self.u6_labjack.voltageToDACBits(3, 1, True)))
         self.labjack_connect = True
 
     def bindingEnergyToVolt(self, binding_energy: float) -> float:
@@ -556,9 +552,7 @@ class DataBackend:
             The voltage value to set at the MAX5216 DAC.
 
         """
-        ref_volt_at_MAX5216_DAC = self.u6_labjack.getAIN(
-            3
-        )  # the reference voltage at the DAC MAX5216
+        ref_volt_at_MAX5216_DAC = self.u6_labjack.getAIN(3)  # the reference voltage at the DAC MAX5216
         volt_bits = int(
             volt * 65535 / ref_volt_at_MAX5216_DAC
         )  # convert input volts to a 16 bit scaled value with the reference voltage
@@ -633,9 +627,7 @@ class DataBackend:
                 pass_no = batch_dataframe["Passes"][row_index]
                 if math.isnan(start_ev):
                     break
-                batch_time = (
-                    (time_per_step) * (pass_no) * ((end_ev - start_ev) / step_ev + 1)
-                )
+                batch_time = (time_per_step) * (pass_no) * ((end_ev - start_ev) / step_ev + 1)
                 total_time_s += batch_time
                 self.total_steps += int((end_ev - start_ev) / step_ev + 1) * pass_no
                 self.total_batch_passes += pass_no
@@ -643,9 +635,7 @@ class DataBackend:
             self.elapsed_time = 0
             self.remaining_time = round(total_time_s / 60, 2)
             self.current_progress = 0
-            self.measurement_thread = threading.Thread(
-                target=self.runBatchMeasurement, args=[batch_dataframe]
-            )
+            self.measurement_thread = threading.Thread(target=self.runBatchMeasurement, args=[batch_dataframe])
             self.plot_fig = reset_fig(batch_mode=True)
         else:
             self.total_steps = int(abs((end_ev - start_ev) / step_ev + 1) * pass_no)
@@ -727,20 +717,16 @@ class DataBackend:
 
         pass_index = 1
 
-        plot_dataframe = pd.DataFrame(
-            {
-                "Binding Energy [eV]": [],
-                "Counts": [],
-            }
-        )
+        plot_dataframe = pd.DataFrame({
+            "Binding Energy [eV]": [],
+            "Counts": [],
+        })
 
         if type_batch:
-            plot_dataframe = pd.DataFrame(
-                {
-                    "Binding Energy [eV]": [],
-                    "Counts_per_milli [/ms]": [],
-                }
-            )
+            plot_dataframe = pd.DataFrame({
+                "Binding Energy [eV]": [],
+                "Counts_per_milli [/ms]": [],
+            })
 
         step_no = 1
 
@@ -773,7 +759,7 @@ class DataBackend:
             counts_per_milli = round(counts / (time_taken * 1000), 6)
             real_kin_energy = round(
                 self.u6_labjack.getAIN(6, differential=True) * 5000 / 10, 6
-            ) # real kinetic energy being scanned from the HAC 5000 external metering. 0-5000 eV <=> 0-10 V
+            )  # real kinetic energy being scanned from the HAC 5000 external metering. 0-5000 eV <=> 0-10 V
             max5216_dac_voltage = round(self.u6_labjack.getAIN(2), 6)
 
             new_data = {
@@ -786,20 +772,16 @@ class DataBackend:
                 "MAX5216_DAC_Voltage [V]": max5216_dac_voltage,
             }
 
-            new_plot_point = pd.DataFrame(
-                {
-                    "Binding Energy [eV]": [binding_energy],
-                    "Counts": [counts],
-                }
-            )
+            new_plot_point = pd.DataFrame({
+                "Binding Energy [eV]": [binding_energy],
+                "Counts": [counts],
+            })
 
             if type_batch:
-                new_plot_point = pd.DataFrame(
-                    {
-                        "Binding Energy [eV]": [binding_energy],
-                        "Counts_per_milli [/ms]": [counts_per_milli],
-                    }
-                )
+                new_plot_point = pd.DataFrame({
+                    "Binding Energy [eV]": [binding_energy],
+                    "Counts_per_milli [/ms]": [counts_per_milli],
+                })
 
             plot_dataframe = pd.concat([plot_dataframe, new_plot_point])
 
@@ -882,19 +864,15 @@ class DataBackend:
                 if type_batch:
                     self.batch_pass_no += 1
                     self.batch_step_no += 1
-                plot_dataframe = pd.DataFrame(
-                    {
-                        "Binding Energy [eV]": [],
-                        "Counts": [],
-                    }
-                )
+                plot_dataframe = pd.DataFrame({
+                    "Binding Energy [eV]": [],
+                    "Counts": [],
+                })
                 if type_batch:
-                    plot_dataframe = pd.DataFrame(
-                        {
-                            "Binding Energy [eV]": [],
-                            "Counts_per_milli [/ms]": [],
-                        }
-                    )
+                    plot_dataframe = pd.DataFrame({
+                        "Binding Energy [eV]": [],
+                        "Counts_per_milli [/ms]": [],
+                    })
 
         if not type_batch:
             self.current_progress = 100
@@ -960,9 +938,7 @@ class DataBackend:
         self.meas_interrupted = True
         self.meas_running = False
 
-    def sendTx400RemoteSignal(
-        self, filament: int, emission_mode: bool, current_value: float
-    ) -> None:
+    def sendTx400RemoteSignal(self, filament: int, emission_mode: bool, current_value: float) -> None:
         """Send Remote signal to the TX400 X-ray source.
 
         Parameters
@@ -980,18 +956,14 @@ class DataBackend:
             self.u6_labjack.setDOState(6, 1)
             self.tx400_emission_selected = True
             self.u6_labjack.getFeedback(
-                u6.DAC0_16(
-                    self.u6_labjack.voltageToDACBits(current_value * 5 / 20, 0, True)
-                )
+                u6.DAC0_16(self.u6_labjack.voltageToDACBits(current_value * 5 / 20, 0, True))
             )  # Set the emission current
             self.tx400_current_value = current_value
         else:
             self.u6_labjack.setDOState(6, 0)
             self.tx400_emission_selected = False
             self.u6_labjack.getFeedback(
-                u6.DAC0_16(
-                    self.u6_labjack.voltageToDACBits(current_value * 3 / 5, 0, True)
-                )
+                u6.DAC0_16(self.u6_labjack.voltageToDACBits(current_value * 3 / 5, 0, True))
             )  # Set the filament current
             self.tx400_current_value = current_value
 
@@ -1063,21 +1035,19 @@ color_mode_switch = html.Span(
 )
 """A dash html Span element for a theme switching button."""
 
-offcanvas = html.Div(
-    [
-        dbc.Offcanvas(
-            dcc.Markdown(
-                "",
-                mathjax=True,
-                className="offcanvas-markdown",
-            ),
-            id="offcanvas",
-            title="Impedance Spectroscopy",
-            is_open=False,
-            class_name="offcanvas-style",
+offcanvas = html.Div([
+    dbc.Offcanvas(
+        dcc.Markdown(
+            "",
+            mathjax=True,
+            className="offcanvas-markdown",
         ),
-    ]
-)
+        id="offcanvas",
+        title="Impedance Spectroscopy",
+        is_open=False,
+        class_name="offcanvas-style",
+    ),
+])
 """A dash html div for a canvas that can be rolled into sight when called. Here theory of the impedance analysis is mentioned."""
 
 save_file_modal = dbc.Modal(
@@ -1094,26 +1064,24 @@ save_file_modal = dbc.Modal(
                 # title="Filename should not contain .\\/:*?\"'<>|",
             ),
         ),
-        dbc.ModalFooter(
-            [
-                dbc.Button(
-                    "Save",
-                    id="confirm-save",
-                    class_name="ms-auto",
-                    n_clicks=0,
-                    outline=True,
-                    color="success",
-                ),
-                dbc.Button(
-                    "Cancel",
-                    id="cancel-save",
-                    class_name="ms-auto",
-                    n_clicks=0,
-                    outline=True,
-                    color="danger",
-                ),
-            ]
-        ),
+        dbc.ModalFooter([
+            dbc.Button(
+                "Save",
+                id="confirm-save",
+                class_name="ms-auto",
+                n_clicks=0,
+                outline=True,
+                color="success",
+            ),
+            dbc.Button(
+                "Cancel",
+                id="cancel-save",
+                class_name="ms-auto",
+                n_clicks=0,
+                outline=True,
+                color="danger",
+            ),
+        ]),
     ],
     id="modal",
     is_open=False,
@@ -1125,142 +1093,134 @@ save_file_modal = dbc.Modal(
 remote_xray_operate_modal = dbc.Modal(
     [
         dbc.ModalHeader(dbc.ModalTitle("X-ray Source Control")),
-        dbc.ModalBody(
-            [
-                dbc.Card(
-                    [
-                        html.H4("TX400", className="card-title m-3"),
-                        dbc.InputGroup(
-                            [
-                                dbc.InputGroupText("Mg"),
-                                dbc.InputGroupText(
-                                    dbc.Switch(id="filament-select-toggle")
+        dbc.ModalBody([
+            dbc.Card(
+                [
+                    html.H4("TX400", className="card-title m-3"),
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupText("Mg"),
+                            dbc.InputGroupText(dbc.Switch(id="filament-select-toggle")),
+                            dbc.InputGroupText("Al"),
+                        ],
+                        class_name="justify-content-center",
+                    ),
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupText("Filament Current"),
+                            dbc.InputGroupText(dbc.Switch(id="current-control-mode")),
+                            dbc.InputGroupText("Emission Control"),
+                        ],
+                        class_name="justify-content-center",
+                    ),
+                    dbc.InputGroup(
+                        [
+                            dbc.InputGroupText("Current"),
+                            dbc.Input(
+                                type="number",
+                                min=0,
+                                max=2.30,
+                                step=0.05,
+                                value=0.0,
+                                id="current-value",
+                                style={"max-width": "fit-content"},
+                            ),
+                            dbc.InputGroupText("A", id="current-unit"),
+                        ],
+                        class_name="justify-content-center",
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                dbc.Button(
+                                    "Send Remote Signal",
+                                    color="danger",
+                                    outline=True,
+                                    id="remote-xray-source-tx400-send",
+                                    disabled=False,
                                 ),
-                                dbc.InputGroupText("Al"),
-                            ],
-                            class_name="justify-content-center",
-                        ),
-                        dbc.InputGroup(
-                            [
-                                dbc.InputGroupText("Filament Current"),
-                                dbc.InputGroupText(
-                                    dbc.Switch(id="current-control-mode")
+                                class_name="d-grid gap-2 col-6 mx-auto",
+                            ),
+                        ],
+                        class_name="button-rows mt-3",
+                    ),
+                ],
+                class_name="mb-3",
+            ),
+            dbc.Card(
+                [
+                    html.H4("SL600", className="card-title m-3"),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                dbc.Label(
+                                    "HV [kV]",
+                                    class_name="label-center-disp-mod",
                                 ),
-                                dbc.InputGroupText("Emission Control"),
-                            ],
-                            class_name="justify-content-center",
-                        ),
-                        dbc.InputGroup(
-                            [
-                                dbc.InputGroupText("Current"),
+                                class_name="justify-content-center",
+                            ),
+                            dbc.Col(
+                                dbc.Label(
+                                    "milliamperes [mA]",
+                                    class_name="label-center-disp-mod",
+                                ),
+                                class_name="justify-content-center",
+                            ),
+                        ],
+                        class_name="m-3 mt-0 mb-0",
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
                                 dbc.Input(
-                                    type="number",
-                                    min=0,
-                                    max=2.30,
-                                    step=0.05,
-                                    value=0.0,
-                                    id="current-value",
-                                    style={"max-width": "fit-content"},
+                                    id="sl600-hv-disp",
+                                    readonly=True,
+                                    style={"max-width": "50%"},
+                                    class_name="m-auto display-input",
                                 ),
-                                dbc.InputGroupText("A", id="current-unit"),
-                            ],
-                            class_name="justify-content-center",
-                        ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    dbc.Button(
-                                        "Send Remote Signal",
-                                        color="danger",
-                                        outline=True,
-                                        id="remote-xray-source-tx400-send",
-                                        disabled=False,
-                                    ),
-                                    class_name="d-grid gap-2 col-6 mx-auto",
+                                class_name="justify-content-center",
+                            ),
+                            dbc.Col(
+                                dbc.Input(
+                                    id="sl600-mA-disp",
+                                    readonly=True,
+                                    style={"max-width": "50%"},
+                                    class_name="m-auto display-input",
                                 ),
-                            ],
-                            class_name="button-rows mt-3",
-                        ),
-                    ],
-                    class_name="mb-3",
-                ),
-                dbc.Card(
-                    [
-                        html.H4("SL600", className="card-title m-3"),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    dbc.Label(
-                                        "HV [kV]",
-                                        class_name="label-center-disp-mod",
-                                    ),
-                                    class_name="justify-content-center",
+                                class_name="justify-content-center",
+                            ),
+                        ],
+                        class_name="m-3 mb-0 mt-0",
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                dbc.Button(
+                                    "Inhibit HV",
+                                    color="danger",
+                                    outline=True,
+                                    id="remote-xray-source-inhibit",
+                                    disabled=False,
                                 ),
-                                dbc.Col(
-                                    dbc.Label(
-                                        "milliamperes [mA]",
-                                        class_name="label-center-disp-mod",
-                                    ),
-                                    class_name="justify-content-center",
-                                ),
-                            ],
-                            class_name="m-3 mt-0 mb-0",
-                        ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    dbc.Input(
-                                        id="sl600-hv-disp",
-                                        readonly=True,
-                                        style={"max-width": "50%"},
-                                        class_name="m-auto display-input",
-                                    ),
-                                    class_name="justify-content-center",
-                                ),
-                                dbc.Col(
-                                    dbc.Input(
-                                        id="sl600-mA-disp",
-                                        readonly=True,
-                                        style={"max-width": "50%"},
-                                        class_name="m-auto display-input",
-                                    ),
-                                    class_name="justify-content-center",
-                                ),
-                            ],
-                            class_name="m-3 mb-0 mt-0",
-                        ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    dbc.Button(
-                                        "Inhibit HV",
-                                        color="danger",
-                                        outline=True,
-                                        id="remote-xray-source-inhibit",
-                                        disabled=False,
-                                    ),
-                                    class_name="d-grid gap-2 col-6 mx-auto",
-                                ),
-                            ],
-                            class_name="button-rows mt-3",
-                        ),
-                    ],
-                    class_name="mb-3",
-                ),
-            ]
-        ),
-        dbc.ModalFooter(
-            [
-                dbc.Button(
-                    "Cancel",
-                    id="cancel-remote-xray",
-                    class_name="ms-auto",
-                    n_clicks=0,
-                    outline=True,
-                    color="success",
-                ),
-            ]
-        ),
+                                class_name="d-grid gap-2 col-6 mx-auto",
+                            ),
+                        ],
+                        class_name="button-rows mt-3",
+                    ),
+                ],
+                class_name="mb-3",
+            ),
+        ]),
+        dbc.ModalFooter([
+            dbc.Button(
+                "Cancel",
+                id="cancel-remote-xray",
+                class_name="ms-auto",
+                n_clicks=0,
+                outline=True,
+                color="success",
+            ),
+        ]),
     ],
     id="xray-modal",
     is_open=False,
@@ -1294,95 +1254,93 @@ def generate_single_mode_tab_content(
         A list indicating the child components to be added to the respective Dash container.
     """
     return [
-        dbc.Col(
-            [
-                dbc.InputGroup(
-                    [
-                        dbc.InputGroupText(
-                            "Start : ",
-                        ),
-                        dbc.Input(
-                            type="number",
-                            step=0.001,
-                            id="start-ev",
-                            value=start_ev,
-                            min=0.0,
-                            max=1486.6,
-                        ),
-                        dbc.InputGroupText(
-                            "eV",
-                        ),
-                    ],
-                ),
-                dbc.InputGroup(
-                    [
-                        dbc.InputGroupText(
-                            "End : ",
-                        ),
-                        dbc.Input(
-                            type="number",
-                            step=0.001,
-                            id="end-ev",
-                            value=end_ev,
-                            min=0.001,
-                            max=1486.6,
-                        ),
-                        dbc.InputGroupText(
-                            "eV",
-                        ),
-                    ],
-                ),
-                dbc.InputGroup(
-                    [
-                        dbc.InputGroupText(
-                            "Step width : ",
-                        ),
-                        dbc.Input(
-                            type="number",
-                            step=0.001,
-                            id="ev-step",
-                            value=ev_step,
-                            min=0.001,
-                            max=1486.6,
-                        ),
-                        dbc.InputGroupText(
-                            "eV",
-                        ),
-                    ],
-                ),
-                dbc.InputGroup(
-                    [
-                        dbc.InputGroupText(
-                            "Time per step : ",
-                        ),
-                        dbc.Input(
-                            type="number",
-                            step=1.0,
-                            id="time-step",
-                            value=time_step,
-                            min=1.0,
-                        ),
-                        dbc.InputGroupText(
-                            "s",
-                        ),
-                    ],
-                ),
-                dbc.InputGroup(
-                    [
-                        dbc.InputGroupText(
-                            "No. of passes : ",
-                        ),
-                        dbc.Input(
-                            type="number",
-                            step=1,
-                            id="meas-passes",
-                            value=pass_no,
-                            min=1,
-                        ),
-                    ],
-                ),
-            ]
-        )
+        dbc.Col([
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText(
+                        "Start : ",
+                    ),
+                    dbc.Input(
+                        type="number",
+                        step=0.001,
+                        id="start-ev",
+                        value=start_ev,
+                        min=0.0,
+                        max=1486.6,
+                    ),
+                    dbc.InputGroupText(
+                        "eV",
+                    ),
+                ],
+            ),
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText(
+                        "End : ",
+                    ),
+                    dbc.Input(
+                        type="number",
+                        step=0.001,
+                        id="end-ev",
+                        value=end_ev,
+                        min=0.001,
+                        max=1486.6,
+                    ),
+                    dbc.InputGroupText(
+                        "eV",
+                    ),
+                ],
+            ),
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText(
+                        "Step width : ",
+                    ),
+                    dbc.Input(
+                        type="number",
+                        step=0.001,
+                        id="ev-step",
+                        value=ev_step,
+                        min=0.001,
+                        max=1486.6,
+                    ),
+                    dbc.InputGroupText(
+                        "eV",
+                    ),
+                ],
+            ),
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText(
+                        "Time per step : ",
+                    ),
+                    dbc.Input(
+                        type="number",
+                        step=1.0,
+                        id="time-step",
+                        value=time_step,
+                        min=1.0,
+                    ),
+                    dbc.InputGroupText(
+                        "s",
+                    ),
+                ],
+            ),
+            dbc.InputGroup(
+                [
+                    dbc.InputGroupText(
+                        "No. of passes : ",
+                    ),
+                    dbc.Input(
+                        type="number",
+                        step=1,
+                        id="meas-passes",
+                        value=pass_no,
+                        min=1,
+                    ),
+                ],
+            ),
+        ])
     ]
 
 
@@ -1583,38 +1541,36 @@ status_displays = [
             ),
         ],
     ),
-    dbc.Row(
-        [
-            dbc.Col(
-                dbc.Input(
-                    id="kin-energy-disp",
-                    readonly=True,
-                    class_name="display-input",
-                )
-            ),
-            dbc.Col(
-                dbc.Input(
-                    id="binding-energy-disp",
-                    readonly=True,
-                    class_name="display-input",
-                )
-            ),
-            dbc.Col(
-                dbc.Input(
-                    id="time-elapsed-disp",
-                    readonly=True,
-                    class_name="display-input",
-                )
-            ),
-            dbc.Col(
-                dbc.Input(
-                    id="time-remain-disp",
-                    readonly=True,
-                    class_name="display-input",
-                )
-            ),
-        ]
-    ),
+    dbc.Row([
+        dbc.Col(
+            dbc.Input(
+                id="kin-energy-disp",
+                readonly=True,
+                class_name="display-input",
+            )
+        ),
+        dbc.Col(
+            dbc.Input(
+                id="binding-energy-disp",
+                readonly=True,
+                class_name="display-input",
+            )
+        ),
+        dbc.Col(
+            dbc.Input(
+                id="time-elapsed-disp",
+                readonly=True,
+                class_name="display-input",
+            )
+        ),
+        dbc.Col(
+            dbc.Input(
+                id="time-remain-disp",
+                readonly=True,
+                class_name="display-input",
+            )
+        ),
+    ]),
 ]
 """A list with the child entries to render the status displays of the current binding energy, current kinetic energy, elapsed time and remaining time of the measurement."""
 
@@ -1888,21 +1844,11 @@ def tab_content(
     """
     if active_tab in "tab-2":
         card_content = generate_batch_data_grid(pd.DataFrame(batch_dataframe))
-        start_ev_mod = old_mode[0]["props"]["children"][0]["props"]["children"][1][
-            "props"
-        ]["value"]
-        end_ev_mod = old_mode[0]["props"]["children"][1]["props"]["children"][1][
-            "props"
-        ]["value"]
-        ev_step_mod = old_mode[0]["props"]["children"][2]["props"]["children"][1][
-            "props"
-        ]["value"]
-        time_step_mod = old_mode[0]["props"]["children"][3]["props"]["children"][1][
-            "props"
-        ]["value"]
-        pass_no_mod = old_mode[0]["props"]["children"][4]["props"]["children"][1][
-            "props"
-        ]["value"]
+        start_ev_mod = old_mode[0]["props"]["children"][0]["props"]["children"][1]["props"]["value"]
+        end_ev_mod = old_mode[0]["props"]["children"][1]["props"]["children"][1]["props"]["value"]
+        ev_step_mod = old_mode[0]["props"]["children"][2]["props"]["children"][1]["props"]["value"]
+        time_step_mod = old_mode[0]["props"]["children"][3]["props"]["children"][1]["props"]["value"]
+        pass_no_mod = old_mode[0]["props"]["children"][4]["props"]["children"][1]["props"]["value"]
         return (
             card_content,
             start_ev_mod,
@@ -1914,9 +1860,7 @@ def tab_content(
         )
     else:
         batch_dataframe_mod = old_mode[0]["props"]["children"][0]["props"]["data"]
-        card_content = generate_single_mode_tab_content(
-            start_ev, end_ev, ev_step, time_step, pass_no
-        )
+        card_content = generate_single_mode_tab_content(start_ev, end_ev, ev_step, time_step, pass_no)
         temp_batch_data = pd.DataFrame(batch_dataframe_mod).to_dict("records")
         return (
             card_content,
@@ -2071,21 +2015,11 @@ def prepareForMeasurement(
             dataframe,
         )
     else:
-        start_ev_mod = card_body[0]["props"]["children"][0]["props"]["children"][1][
-            "props"
-        ]["value"]
-        end_ev_mod = card_body[0]["props"]["children"][1]["props"]["children"][1][
-            "props"
-        ]["value"]
-        ev_step_mod = card_body[0]["props"]["children"][2]["props"]["children"][1][
-            "props"
-        ]["value"]
-        time_step_mod = card_body[0]["props"]["children"][3]["props"]["children"][1][
-            "props"
-        ]["value"]
-        pass_no_mod = card_body[0]["props"]["children"][4]["props"]["children"][1][
-            "props"
-        ]["value"]
+        start_ev_mod = card_body[0]["props"]["children"][0]["props"]["children"][1]["props"]["value"]
+        end_ev_mod = card_body[0]["props"]["children"][1]["props"]["children"][1]["props"]["value"]
+        ev_step_mod = card_body[0]["props"]["children"][2]["props"]["children"][1]["props"]["value"]
+        time_step_mod = card_body[0]["props"]["children"][3]["props"]["children"][1]["props"]["value"]
+        pass_no_mod = card_body[0]["props"]["children"][4]["props"]["children"][1]["props"]["value"]
         return (
             "single",
             start_ev_mod,
@@ -2205,15 +2139,11 @@ def startMeasurement(
     dark_theme = False if switch_on else True
     interval_time = 1000
     if mode in "single":
-        data_backend.startMeasurement(
-            start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg
-        )
+        data_backend.startMeasurement(start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg)
         fig = reset_fig(theme_dark=dark_theme)
         interval_time = int(time_step * 1000)
     else:
-        data_backend.startMeasurement(
-            start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg, True
-        )
+        data_backend.startMeasurement(start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg, True)
         fig = reset_fig(theme_dark=dark_theme, batch_mode=True)
         interval_time = batch_sett["Time [s/eV]"].min() * 1000
 
@@ -2317,12 +2247,8 @@ def checkRunningProgress(
             True,  # disable the stop button
             False,  # disable the shutdown button
             "mb-3",  # class name for the Card component
-            True
-            if data_backend.meas_completed
-            else False,  # disable the graph interval component
-            True
-            if data_backend.meas_completed
-            else False,  # disable the progress interval component
+            True if data_backend.meas_completed else False,  # disable the graph interval component
+            True if data_backend.meas_completed else False,  # disable the progress interval component
             False,  # disable the save results button
             False,  # disable the source select switch
             False,  # disable the save on complete switch
@@ -2356,6 +2282,34 @@ def updateProgress(n: int) -> bool:
 
 
 # ********************************************************************************
+
+
+@callback(
+    Output("progress-bar", "striped"),
+    Output("progress-bar", "animated"),
+    Input("progress-interval", "disabled"),
+    prevent_initial_call=True,
+)
+def windUpAfterMeasurement(interval_disabled: bool) -> tuple[bool, bool]:
+    """Method called when the progress-interval is disabled.
+
+    Parameters
+    ----------
+    interval_disabled : bool
+        Boolean indicating if the progress-interval is disabled.
+
+    Returns
+    -------
+    tuple[bool, bool]
+        Boolean indicating if the progress bar is to be striped, and animated respectively.
+    """
+    if not interval_disabled:
+        return True, True
+    else:
+        return False, False
+
+
+# *********************************************************************************
 
 
 @callback(
@@ -2455,9 +2409,7 @@ def confirmFileSaveModalOpen(n1: int, n2: int, is_open: bool) -> bool:
     Input("save-on-complete-filename", "value"),
     prevent_initial_call=True,
 )
-def checkFilenameValidity(
-    filename1: str, filename2: str
-) -> tuple[bool, bool, bool, bool, bool]:
+def checkFilenameValidity(filename1: str, filename2: str) -> tuple[bool, bool, bool, bool, bool]:
     """Method to check filename validity.
 
     Parameters
@@ -2499,7 +2451,7 @@ def checkFilenameValidity(
         allow_duplicate=True,
     ),
     Input("confirm-save", "n_clicks"),
-    Input("start-click", "disabled"),
+    Input("progress-interval", "disabled"),
     State("graph", "figure"),
     State("save-as-file", "value"),
     State("save-on-complete-switch", "value"),
@@ -2508,7 +2460,7 @@ def checkFilenameValidity(
 )
 def saveDataAndPlot(
     n_clicks: int,
-    start_disabled: bool,
+    interval_disabled: bool,
     ex_fig: dict,
     filename: str,
     save_on_complete_switch: bool,
@@ -2520,7 +2472,7 @@ def saveDataAndPlot(
     ----------
     n_clicks : int
         Integer indicating the number of times the save-results button was clicked.
-    start_disabled : bool
+    interval_disabled : bool
         Boolean indicating if the start button is disabled. If it is disabled, the measurement is running.
     ex_fig : dict
         The dictionary with the figure object of the graph area in the Dash app.
@@ -2537,8 +2489,8 @@ def saveDataAndPlot(
         The boolean to close the Modal.
     """
     input_context = ctx.triggered_id
-    if input_context == "start-click":
-        if save_on_complete_switch and not start_disabled:
+    if input_context == "progress-interval":
+        if save_on_complete_switch and interval_disabled:
             if data_backend.meas_interrupt_id == "stop-click":
                 data_backend.meas_interrupt_id = ""
                 return no_update
@@ -2819,6 +2771,4 @@ def shutdownApp(n: int) -> None:
 if __name__ == "__main__":
     # app.run(debug=True, port="8060")
     # app.server.http_server.serve_forever()
-    waitress.serve(
-        app.server, host="localhost", port="8060", expose_tracebacks=True, threads=8
-    )
+    waitress.serve(app.server, host="localhost", port="8060", expose_tracebacks=True, threads=8)
