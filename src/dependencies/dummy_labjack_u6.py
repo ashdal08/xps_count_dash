@@ -19,7 +19,7 @@ class DAC1_8:
     """
 
     def __init__(self, Value):
-        return "dac1"
+        return None
 
 
 class DAC0_8:
@@ -35,7 +35,7 @@ class DAC0_8:
     """
 
     def __init__(self, Value):
-        return "dac0"
+        return None
 
 
 class DAC1_16:
@@ -51,7 +51,7 @@ class DAC1_16:
     """
 
     def __init__(self, Value):
-        return "dac1"
+        return None
 
 
 class DAC0_16:
@@ -67,7 +67,7 @@ class DAC0_16:
     """
 
     def __init__(self, Value):
-        return "dac0"
+        return None
 
 
 class Counter0:
@@ -86,7 +86,7 @@ class Counter0:
     """
 
     def __init__(self, Reset=False):
-        return "counter_zero" if Reset else "counter"
+        return None
 
 
 class U6:

@@ -137,7 +137,7 @@ def reset_fig(theme_dark: bool = False, batch_mode: bool = False) -> go.Figure:
         layout=go.Layout(
             **LAYOUT,
             xaxis_title="Binding Energy [eV]",
-            yaxis_title="Counts",
+            yaxis_title="Counts" if not batch_mode else "Counts_per_milli [/ms]",
             uirevision="no_change",
             legend={
                 "orientation": "h",
@@ -666,7 +666,7 @@ class DataBackend:
             "Time_per_step [s]": pl.Float64,
             "Counts": pl.Float64,
             "Counts_per_milli [/ms]": pl.Float64,
-            "U6_DAC0_Voltage [V]": pl.Float64,
+            "Real_Kin_Energy [eV]": pl.Float64,
             "MAX5216_DAC_Voltage [V]": pl.Float64,
         }
         data_temp = {
@@ -675,7 +675,7 @@ class DataBackend:
             "Time_per_step [s]": [],
             "Counts": [],
             "Counts_per_milli [/ms]": [],
-            "U6_DAC0_Voltage [V]": [],
+            "Real_Kin_Energy [eV]": [],
             "MAX5216_DAC_Voltage [V]": [],
         }
 
@@ -771,7 +771,9 @@ class DataBackend:
             time_taken = time.time() - start_time  # record in s
             binding_energy = self.setpoint_ev
             counts_per_milli = round(counts / (time_taken * 1000), 6)
-            u6_dac0_voltage = round(self.u6_labjack.getAIN(0), 6)
+            real_kin_energy = round(
+                self.u6_labjack.getAIN(6, differential=True) * 5000 / 10, 6
+            ) # real kinetic energy being scanned from the HAC 5000 external metering. 0-5000 eV <=> 0-10 V
             max5216_dac_voltage = round(self.u6_labjack.getAIN(2), 6)
 
             new_data = {
@@ -780,7 +782,7 @@ class DataBackend:
                 "Time_per_step [s]": time_taken,
                 "Counts": counts,
                 "Counts_per_milli [/ms]": counts_per_milli,
-                "U6_DAC0_Voltage [V]": u6_dac0_voltage,
+                "Real_Kin_Energy [eV]": real_kin_energy,
                 "MAX5216_DAC_Voltage [V]": max5216_dac_voltage,
             }
 
