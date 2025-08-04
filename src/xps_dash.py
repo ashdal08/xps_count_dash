@@ -2291,7 +2291,7 @@ def updateProgress(n: int) -> bool:
     prevent_initial_call=True,
 )
 def windUpAfterMeasurement(interval_disabled: bool) -> tuple[bool, bool]:
-    """Method called when the progress-interval is disabled.
+    """Method called when the progress-interval disabled is toggled.
 
     Parameters
     ----------
@@ -2405,11 +2405,18 @@ def confirmFileSaveModalOpen(n1: int, n2: int, is_open: bool) -> bool:
     Output("save-as-file", "invalid"),
     Output("save-on-complete-filename", "valid"),
     Output("save-on-complete-filename", "invalid"),
+    Output(
+        "start-click",
+        "disabled",
+        allow_duplicate=True,
+    ),
     Input("save-as-file", "value"),
     Input("save-on-complete-filename", "value"),
     prevent_initial_call=True,
 )
-def checkFilenameValidity(filename1: str, filename2: str) -> tuple[bool, bool, bool, bool, bool]:
+def checkFilenameValidity(
+    filename1: str, filename2: str
+) -> tuple[bool | dash._callback.NoUpdate, bool, bool, bool, bool, bool | dash._callback.NoUpdate]:
     """Method to check filename validity.
 
     Parameters
@@ -2422,8 +2429,8 @@ def checkFilenameValidity(filename1: str, filename2: str) -> tuple[bool, bool, b
 
     Returns
     -------
-    tuple[bool, bool, bool, bool, bool]
-        Boolean to disable the save button in the modal, enable valid property of both the input field, enable invalid property of both the input field respectively.
+    tuple[bool | dash._callback.NoUpdate, bool, bool, bool, bool | dash._callback.NoUpdate]
+        Boolean to disable the save button in the modal, enable valid property of both the input field, enable invalid property of both the input field, and the boolean whether the start button is disabled respectively.
     """
 
     filename_context_id = ctx.triggered_id
@@ -2436,9 +2443,23 @@ def checkFilenameValidity(filename1: str, filename2: str) -> tuple[bool, bool, b
     pattern = r'[^.\\/:*?"\'<>|]+'
     match = re.fullmatch(pattern, filename)
     if match is not None:
-        return False, True, False, True, False
+        return (
+            no_update if filename_context_id == "save-on-complete-filename" else False,
+            True,
+            False,
+            True,
+            False,
+            False if filename_context_id == "save-on-complete-filename" else no_update,
+        )
     else:
-        return True, False, True, False, True
+        return (
+            no_update if filename_context_id == "save-on-complete-filename" else True,
+            False,
+            True,
+            False,
+            True,
+            True if filename_context_id == "save-on-complete-filename" else no_update,
+        )
 
 
 # ********************************************************************************
@@ -2560,6 +2581,7 @@ def toggleXraySourceModal(n1: int, n2: int, is_open: bool) -> tuple[bool, bool]:
     Output("sl600-mA-disp", "value"),
     Output("xray-source-command-clicked", "data", allow_duplicate=True),
     Output("xray-source-inhibit-clicked", "data", allow_duplicate=True),
+    Output("remote-xray-source-inhibit", "disabled", allow_duplicate=True),
     Input("xray-modal-interval-component", "n_intervals"),
     State("filament-select-toggle", "value"),
     State("current-control-mode", "value"),
@@ -2580,6 +2602,7 @@ def updateXraySourceHVandCurrent(
     float | dash._callback.NoUpdate,
     bool | dash._callback.NoUpdate,
     bool | dash._callback.NoUpdate,
+    bool | dash._callback.NoUpdate,
 ]:
     """Method called by the xray-modal-interval-component interval component on firing.
 
@@ -2598,8 +2621,8 @@ def updateXraySourceHVandCurrent(
 
     Returns
     -------
-    tuple[float, float, bool | NoUpdate]
-        The present high voltage of the X-ray source and the current in mA, change the boolean state of the command-clicked store element, and change the boolean state of the inhibit-clicked store element.
+    tuple[float, float, bool | dash._callback.NoUpdate, bool | dash._callback.NoUpdate, bool | dash._callback.NoUpdate]
+        The present high voltage of the X-ray source and the current in mA, change the boolean state of the command-clicked store element, change the boolean state of the inhibit-clicked store element, and change the disabled state of the inhibit button.
     """
     if source_inhibit_clicked:
         if data_backend.sl600_inhibited:
@@ -2607,18 +2630,18 @@ def updateXraySourceHVandCurrent(
         else:
             data_backend.sl600Inhibit(True)
 
-        return no_update, no_update, no_update, False
+        return no_update, no_update, no_update, False, no_update
     if send_command_clicked:
         if filament_2:
             data_backend.sendTx400RemoteSignal(1, emission, current_value)
         else:
             data_backend.sendTx400RemoteSignal(0, emission, current_value)
 
-        return no_update, no_update, False, no_update
+        return no_update, no_update, False, no_update, no_update
 
     hv, current = data_backend.sl600GetParams()
 
-    return hv, current, no_update, no_update
+    return hv, current, no_update, no_update, True if current > 0.28 else False
 
 
 # ******************************************************************************
