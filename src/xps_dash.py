@@ -105,7 +105,7 @@ THEMES: list = [
 """List of theme names for the dash app."""
 
 
-def reset_fig(theme_dark: bool = False, batch_mode: bool = False) -> go.Figure:
+def reset_fig(theme_dark: bool = False, batch_mode: bool = False) -> tuple[go.Figure, Patch]:
     """Method to create blank plot figure.
 
     Parameters
@@ -117,8 +117,8 @@ def reset_fig(theme_dark: bool = False, batch_mode: bool = False) -> go.Figure:
 
     Returns
     -------
-    plotly.graph_objects.Figure
-        The plotly figure object.
+    tuple[plotly.graph_objects.Figure, dash.Patch]
+        The plotly figure object, and the dash Patch object.
     """
     trace_name = "pass_1"
     if batch_mode:
@@ -153,7 +153,11 @@ def reset_fig(theme_dark: bool = False, batch_mode: bool = False) -> go.Figure:
         fig.update_layout(dict(template=BOOTSTRAP_DARK))
         fig = updateRefLinesTheme(fig, True)
 
-    return fig
+    dash_patch = Patch()
+    dash_patch["data"] = fig.to_dict()["data"]
+    dash_patch["layout"] = fig.to_dict()["layout"]
+
+    return fig, dash_patch
 
 
 def addPlotRefLines(fig: go.Figure) -> go.Figure:
@@ -356,7 +360,7 @@ def addOrUpdatePlotTraceData(
     x_data: pd.Series,
     y_data: pd.Series,
     trace_name: str,
-) -> go.Figure:
+) -> tuple[go.Figure, dash.Patch]:
     """Method to add or update traces in the plotly Figure object. To be used whenever a new point is obtained from the instrument.
 
     Parameters
@@ -374,10 +378,11 @@ def addOrUpdatePlotTraceData(
 
     Returns
     -------
-    plotly.graph_objects.Figure
-        The plotly Figure object returned after adding or updating the trace.
+    tuple[plotly.graph_objects.Figure, dash.Patch]
+        The plotly Figure object returned after adding or updating the trace, and the dash Patch object for updating the plot.
     """
     existing_passes = len(fig["data"])
+    dash_patch = Patch()
     if existing_passes < pass_index:
         fig.add_trace(
             go.Scatter(
@@ -389,6 +394,10 @@ def addOrUpdatePlotTraceData(
                 name=trace_name,
             )
         )
+        dash_patch["data"].append(fig["data"][-1])
+        dash_patch["data"][-1]["x"] = []
+        dash_patch["data"][-1]["y"] = []
+
     fig.update_traces(
         overwrite=False,
         x=x_data,
@@ -396,7 +405,13 @@ def addOrUpdatePlotTraceData(
         selector=dict(name=trace_name),
     )
 
-    return fig
+    for i, trace in enumerate(fig["data"]):
+        if trace["name"] == trace_name:
+            dash_patch["data"][i]["x"].append(x_data.iloc[-1])
+            dash_patch["data"][i]["y"].append(y_data.iloc[-1])
+            break
+
+    return fig, dash_patch
 
 
 class DataBackend:
@@ -467,6 +482,8 @@ class DataBackend:
     """Plotly figure object to plot the measurement data."""
     plot_file_name: str
     """HTML plot file name."""
+    dash_patch: Patch = Patch()
+    """Patch object to update the dash app layout."""
     meas_interrupted: bool = False
     """Boolean to check if the measurement was interrupted."""
     meas_interrupt_id: str = ""
@@ -510,7 +527,7 @@ class DataBackend:
 
         """
         self.connectLabjack()
-        self.plot_fig = reset_fig()
+        self.plot_fig, self.dash_patch = reset_fig()
 
         self.plot_file_name = "".join([os.getcwd(), "\\src\\dependencies\\", "plt_dat.html"])
 
@@ -636,7 +653,7 @@ class DataBackend:
             self.remaining_time = round(total_time_s / 60, 2)
             self.current_progress = 0
             self.measurement_thread = threading.Thread(target=self.runBatchMeasurement, args=[batch_dataframe])
-            self.plot_fig = reset_fig(batch_mode=True)
+            self.plot_fig, self.dash_patch = reset_fig(batch_mode=True)
         else:
             self.total_steps = int(abs((end_ev - start_ev) / step_ev + 1) * pass_no)
             total_time_s = time_per_step * pass_no * ((end_ev - start_ev) / step_ev + 1)
@@ -648,7 +665,7 @@ class DataBackend:
                 target=self.runSingleMeasurement,
                 args=[start_ev, end_ev, step_ev, time_per_step, pass_no, 0, 0, False],
             )
-            self.plot_fig = reset_fig()
+            self.plot_fig, self.dash_patch = reset_fig()
 
         self.typ_schema = {
             "Binding Energy [eV]": pl.Float64,
@@ -788,7 +805,7 @@ class DataBackend:
             new_df = pl.DataFrame(new_data, schema=self.typ_schema)
             self.data_table = pl.concat([self.data_table, new_df])
             if not type_batch:
-                self.plot_fig = addOrUpdatePlotTraceData(
+                self.plot_fig, self.dash_patch = addOrUpdatePlotTraceData(
                     self.plot_fig,
                     pass_index,
                     plot_dataframe["Binding Energy [eV]"],
@@ -796,7 +813,7 @@ class DataBackend:
                     f"pass_{pass_index}",
                 )
             else:
-                self.plot_fig = addOrUpdatePlotTraceData(
+                self.plot_fig, self.dash_patch = addOrUpdatePlotTraceData(
                     self.plot_fig,
                     self.batch_pass_no,
                     plot_dataframe["Binding Energy [eV]"],
@@ -1005,7 +1022,7 @@ class DataBackend:
 data_backend = DataBackend()
 """The data processing backend class."""
 
-fig = reset_fig()
+fig, not_used = reset_fig()
 """The plotly figure to be displayed in the plot area of the dash app."""
 
 
@@ -1631,7 +1648,7 @@ app.layout = html.Div(
         dcc.Store("xray-source-inhibit-clicked", data=False),
         dcc.Interval(id="progress-interval", interval=300, disabled=True),
         dcc.Interval(id="xray-modal-interval-component", interval=1000, disabled=True),
-        dcc.Interval(id="interval-component", interval=300, disabled=False),
+        dcc.Interval(id="interval-component", interval=300, disabled=True),
         save_file_modal,
         remote_xray_operate_modal,
         dbc.Row(
@@ -1909,7 +1926,7 @@ def updateFigureTemplate(switch_on: int, ex_fig: dict) -> go.Figure | Patch:
 
     patched_figure = Patch()
     patched_figure["layout"]["template"] = template
-    patched_figure["data"] = old_fig["data"]
+    patched_figure["data"] = old_fig.to_dict()["data"]
 
     return patched_figure
 
@@ -2140,14 +2157,14 @@ def startMeasurement(
     interval_time = 1000
     if mode in "single":
         data_backend.startMeasurement(start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg)
-        fig = reset_fig(theme_dark=dark_theme)
+        fig, test = reset_fig(theme_dark=dark_theme)
         interval_time = int(time_step * 1000)
     else:
         data_backend.startMeasurement(start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg, True)
-        fig = reset_fig(theme_dark=dark_theme, batch_mode=True)
+        fig, test = reset_fig(theme_dark=dark_theme, batch_mode=True)
         interval_time = batch_sett["Time [s/eV]"].min() * 1000
 
-    return True, False, False, interval_time, 300, fig
+    return True, False, False, interval_time, 1000, fig
 
 
 # ********************************************************************************
@@ -2351,7 +2368,7 @@ def updateGraphLive(n: int) -> tuple[int, Patch, bool, float, float, float, floa
 
     return (
         data_backend.current_progress,
-        patched_figure,
+        data_backend.dash_patch,
         not data_backend.meas_running,
         data_backend.current_kinetic_energy,
         data_backend.current_binding_energy,
