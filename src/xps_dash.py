@@ -2188,16 +2188,6 @@ def startMeasurement(
     ),
     Output("meas-select-card", "class_name"),
     Output(
-        "interval-component",
-        "disabled",
-        allow_duplicate=True,
-    ),
-    Output(
-        "progress-interval",
-        "disabled",
-        allow_duplicate=True,
-    ),
-    Output(
         "save-results",
         "disabled",
         allow_duplicate=True,
@@ -2222,13 +2212,13 @@ def startMeasurement(
         "disabled",
         allow_duplicate=True,
     ),
-    Input("check-running", "data"),
+    Input("progress-interval", "disabled"),
     State("save-on-complete-switch", "value"),
     prevent_initial_call=True,
 )
 def checkRunningProgress(
-    running: bool, save_filename_switch: bool
-) -> tuple[bool, bool, bool, str, bool, bool, bool, bool, bool, bool, bool]:
+    not_running: bool, save_filename_switch: bool
+) -> tuple[bool, bool, bool, str, bool, bool, bool, bool, bool]:
     """Method called when the check-running boolean in the Store is updated.
 
     Parameters
@@ -2244,14 +2234,12 @@ def checkRunningProgress(
     tuple[bool, bool, bool, str, bool, bool, bool, bool, bool, bool]
         The boolean indicating if the start button is disabled, boolean indicating if the stop button is disabled, boolean indicating if the shutdown button is disabled, the class name for the Card component, boolean indicating if the graph interval is disabled, boolean indicating if the progress interval is disabled, boolean indicating if the save button is disabled, boolean indicating if the select source switch is disabled, boolean indicating if the save on completion switch is disabled, boolean indicating if the save on complete filename is disabled, and the boolean indicating if the remote operate X-ray button is disabled respectively.
     """
-    if running:
+    if not not_running:
         return (
             True,  # disable the start button
             False,  # disable the stop button
             True,  # disable the shutdown button
             "mb-3 card-disable",  # class name for the Card component
-            False,  # disable the graph interval component
-            False,  # disable the progress interval component
             True,  # disable the save results button
             True,  # disable the source select switch
             True,  # disable the save on complete switch
@@ -2264,8 +2252,6 @@ def checkRunningProgress(
             True,  # disable the stop button
             False,  # disable the shutdown button
             "mb-3",  # class name for the Card component
-            True if data_backend.meas_completed else False,  # disable the graph interval component
-            True if data_backend.meas_completed else False,  # disable the progress interval component
             False,  # disable the save results button
             False,  # disable the source select switch
             False,  # disable the save on complete switch
@@ -2278,24 +2264,37 @@ def checkRunningProgress(
 
 
 @callback(
-    Output("check-running", "data"),
+    Output("progress-interval", "disabled"),
     Input("progress-interval", "n_intervals"),
+    State("progress-interval", "disabled"),
     prevent_initial_call=True,
 )
-def updateProgress(n: int) -> bool:
+def updateProgress(n: int, interval_disabled: bool) -> bool | dash._callback.NoUpdate:
     """Method called by the progress-interval interval component on firing.
 
     Parameters
     ----------
     n : int
         Integer indicating the number of intervals the interval component was fired.
+    interval_disabled : bool
+        Boolean indicating if the progress-interval is currently disabled.
 
     Returns
     -------
-    bool
-        Integer for the current value of the progress bar, boolean indicating if the measurement is running, current kinetic energy value of the measurement, current binding energy value of the measurement, the elapsed time of the measurement, the remaining time of the measurement, respectively.
+    bool | dash._callback.NoUpdate
+        Boolean indicating if the progress-interval is to be disabled. It will return True if the measurement is not running, and False if it is running.
     """
-    return data_backend.meas_running
+
+    if interval_disabled:
+        if data_backend.meas_running:
+            return not interval_disabled
+        else:
+            return no_update
+    else:
+        if data_backend.meas_running:
+            return no_update
+        else:
+            return not interval_disabled
 
 
 # ********************************************************************************
@@ -2320,10 +2319,8 @@ def windUpAfterMeasurement(interval_disabled: bool) -> tuple[bool, bool]:
     tuple[bool, bool]
         Boolean indicating if the progress bar is to be striped, and animated respectively.
     """
-    if not interval_disabled:
-        return True, True
-    else:
-        return False, False
+
+    return not interval_disabled, not interval_disabled
 
 
 # *********************************************************************************
@@ -2683,10 +2680,8 @@ def toggleXraySourceCurrentModeValue(emission: bool) -> tuple[float, str]:
     tuple[float, str]
         A tuple with the updated max value to the current input field and the new unit to be used for the current input field.
     """
-    if emission:
-        return 20.0, "mA"
-    else:
-        return 2.30, "A"
+
+    return (20.0, "mA") if emission else (2.30, "A")
 
 
 # ******************************************************************************
@@ -2750,10 +2745,7 @@ def sendXraySourceCommand(n: int, current_value: float) -> tuple[bool, bool]:
         Returns a tuple with a boolean indicating if the Inhibit button is disabled, and a boolean indicating if the send X-ray source command button was clicked.
     """
 
-    if current_value > 0.0:
-        return True, True
-    else:
-        return False, True
+    return (True, True) if current_value > 0.0 else (False, True)
 
 
 # *******************************************************************************
