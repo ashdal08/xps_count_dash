@@ -2499,10 +2499,10 @@ clientside_callback(
     Output("time-elapsed-disp", "value"),
     Output("time-remain-disp", "value"),
     Input("current-kinetic-energy", "data"),
-    State("current-binding-energy", "data"),
-    State("elapsed-time", "data"),
-    State("remaining-time", "data"),
-    State("current-progress", "data"),
+    Input("current-binding-energy", "data"),
+    Input("elapsed-time", "data"),
+    Input("remaining-time", "data"),
+    Input("current-progress", "data"),
     prevent_initial_call=True,
 )
 
@@ -2564,11 +2564,28 @@ clientside_callback(
     Input("save-as-file", "value"),
     Input("save-on-complete-filename", "value"),
     Input("save-on-complete-switch", "value"),
+    Input("save-results", "n_clicks"),
     prevent_initial_call=True,
 )
-def checkFilenameValidity(filename1, filename2, not_used):
+def checkFilenameValidity(filename1, filename2, not_used, not_used2) -> dict:
+    """Method to check the validity of the filename entered in the input field.
+    Parameters
+    ----------
+    filename1 : str
+        Name of the file to be saved as when the Save Results button is clicked.
+    filename2 : str
+        Name of the file to be saved as when the Save on Complete switch is ON.
+    not_used : bool
+        Boolean indicating if the Save on Complete switch is ON or OFF. Not used in this callback
+    not_used2 : int
+        Integer indicating the number of clicks on the Save Results button. Not used in this callback.
+    Returns
+    -------
+    dict
+        Dictionary with the target id of the input field and a boolean indicating if the filename is valid
+    """
     ctx_id = ctx.triggered_id
-    filename = filename1 if ctx_id == "save-as-file" else filename2
+    filename = filename1 if ctx_id == "save-as-file" or ctx_id == "save-results" else filename2
 
     if filename is None:
         filename = ""

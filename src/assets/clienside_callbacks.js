@@ -10,7 +10,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     save_on_complete_toggled: (switchOn) => {
       return [!switchOn, switchOn];
     },
-    check_running_progress: (noRunning, saveFilenameSwitch) => {
+    check_running_progress: (notRunning, saveFilenameSwitch) => {
       if (!notRunning) {
         return [
           true, false, true, "mb-3 card-disable", true, true, true, true, true
@@ -32,11 +32,11 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
       currentProgress
     ) => {
       return [
+        currentProgress,
         currentKineticEnergy.toFixed(2),
         currentBindingEnergy.toFixed(2),
         elapsedTime.toFixed(2),
         remainingTime.toFixed(2),
-        currentProgress
       ];
     },
     confirm_file_save_modal_open: (n1, n2, isOpen) => {
@@ -58,20 +58,20 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
       if (isValid) {
         return [
           isSave ? window.dash_clientside.no_update : false,  // confirm-save disabled
-          true, // save-as-file valid
-          false, // save-as-file invalid
-          true, // save-on-complete-filename valid
-          false, // save-on-complete-filename invalid
+          isSave ? window.dash_clientside.no_update : true, // save-as-file valid
+          isSave ? window.dash_clientside.no_update : false, // save-as-file invalid
+          !isSave ? window.dash_clientside.no_update : true, // save-on-complete-filename valid
+          !isSave ? window.dash_clientside.no_update : false, // save-on-complete-filename invalid
           !isSave ? window.dash_clientside.no_update : false // start-click disabled
         ];
       } else {
         return [
           isSave ? window.dash_clientside.no_update : true, // confirm-save disabled
-          false,   // save-as-file valid
-          true,  // save-as-file invalid
-          false,  // save-on-complete-filename valid
-          true, // save-on-complete-filename invalid
-          isSave ? true : window.dash_clientside.no_update     // start-click disabled
+          isSave ? window.dash_clientside.no_update : false,   // save-as-file valid
+          isSave ? window.dash_clientside.no_update : true,  // save-as-file invalid
+          !isSave ? window.dash_clientside.no_update : false,  // save-on-complete-filename valid
+          !isSave ? window.dash_clientside.no_update : true, // save-on-complete-filename invalid
+          !isSave ? window.dash_clientside.no_update : true    // start-click disabled
         ];
       }
     },
