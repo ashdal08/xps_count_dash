@@ -2428,7 +2428,7 @@ clientside_callback(
 
 
 @callback(
-    Output("progress-bar", "value"),
+    Output("current-progress", "data"),
     Output(
         "graph",
         "figure",
@@ -2493,14 +2493,17 @@ def updateGraphLive(
 
 clientside_callback(
     ClientsideFunction("clientside", "update_display_values"),
+    Output("progress-bar", "value"),
     Output("kin-energy-disp", "value"),
     Output("binding-energy-disp", "value"),
     Output("time-elapsed-disp", "value"),
     Output("time-remain-disp", "value"),
     Input("current-kinetic-energy", "data"),
-    Input("current-binding-energy", "data"),
-    Input("elapsed-time", "data"),
-    Input("remaining-time", "data"),
+    State("current-binding-energy", "data"),
+    State("elapsed-time", "data"),
+    State("remaining-time", "data"),
+    State("current-progress", "data"),
+    prevent_initial_call=True,
 )
 
 

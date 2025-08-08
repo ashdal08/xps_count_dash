@@ -10,38 +10,40 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     save_on_complete_toggled: (switchOn) => {
       return [!switchOn, switchOn];
     },
-    check_running_progress: (not_running, save_filename_switch) => {
-      if (!not_running) {
+    check_running_progress: (noRunning, saveFilenameSwitch) => {
+      if (!notRunning) {
         return [
           true, false, true, "mb-3 card-disable", true, true, true, true, true
         ];
       } else {
         return [
-          false, true, false, "mb-3", false, false, false, !save_filename_switch, false
+          false, true, false, "mb-3", false, false, false, !saveFilenameSwitch, false
         ];
       }
     },
-    wind_up_after_measurement: (interval_disabled) => {
-      return [!interval_disabled, !interval_disabled];
+    wind_up_after_measurement: (intervalDisabled) => {
+      return [!intervalDisabled, !intervalDisabled];
     },
     update_display_values: (
-      current_kinetic_energy,
-      current_binding_energy,
-      elapsed_time,
-      remaining_time
+      currentKineticEnergy,
+      currentBindingEnergy,
+      elapsedTime,
+      remainingTime,
+      currentProgress
     ) => {
       return [
-        current_kinetic_energy.toFixed(2),
-        current_binding_energy.toFixed(2),
-        elapsed_time.toFixed(2),
-        remaining_time.toFixed(2)
+        currentKineticEnergy.toFixed(2),
+        currentBindingEnergy.toFixed(2),
+        elapsedTime.toFixed(2),
+        remainingTime.toFixed(2),
+        currentProgress
       ];
     },
-    confirm_file_save_modal_open: (n1, n2, is_open) => {
+    confirm_file_save_modal_open: (n1, n2, isOpen) => {
       if (n1 || n2) {
-        return !is_open;
+        return !isOpen;
       }
-      return is_open;
+      return isOpen;
     },
     check_filename_validity: (data) => {
       if (!data || !data.target) {
