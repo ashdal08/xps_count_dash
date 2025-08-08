@@ -910,9 +910,9 @@ class DataBackend:
                 if pass_index <= pass_no:
                     self.setSpiVoltage(self.bindingEnergyToVolt(start_ev))
                     step_no += 1
-                    if type_batch:
-                        self.batch_pass_no += 1
-                        self.batch_step_no += 1
+                if type_batch:
+                    self.batch_pass_no += 1
+                    self.batch_step_no += 1
                 plot_dataframe = pd.DataFrame({
                     "Binding Energy [eV]": [],
                     "Counts": [],
