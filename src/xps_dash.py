@@ -758,7 +758,7 @@ class DataBackend:
             The type of measurement. True for batch measurement, False for single measurement, by default False.
 
         """
-        self.setSpiVoltage(self.bindingEnergyToVolt(start_ev))
+        self.setSpiVoltage(self.bindingEnergyToVolt(round(start_ev,3)))
 
         pass_index = 1
 
@@ -899,8 +899,8 @@ class DataBackend:
             self.remaining_time -= time_taken / 60
             self.elapsed_time += time_taken / 60
 
-            if self.setpoint_ev + step_ev <= end_ev:
-                self.setpoint_ev += step_ev
+            if self.setpoint_ev + round(step_ev,3) <= round(end_ev,3):
+                self.setpoint_ev += round(step_ev,3)
                 step_no += 1
                 if type_batch:
                     self.batch_step_no += 1
@@ -908,7 +908,7 @@ class DataBackend:
             else:
                 pass_index += 1
                 if pass_index <= pass_no:
-                    self.setSpiVoltage(self.bindingEnergyToVolt(start_ev))
+                    self.setSpiVoltage(self.bindingEnergyToVolt(round(start_ev,3)))
                     step_no += 1
                 if type_batch:
                     self.batch_pass_no += 1
