@@ -484,6 +484,8 @@ class DataBackend:
     """HTML plot file name."""
     dash_patch: Patch = Patch()
     """Patch object to update the dash app layout."""
+    dash_patch_accessed: bool = False
+    """Boolean to check if the dash patch has been accessed."""
     meas_interrupted: bool = False
     """Boolean to check if the measurement was interrupted."""
     meas_interrupt_id: str = ""
@@ -527,7 +529,8 @@ class DataBackend:
 
         """
         self.connectLabjack()
-        self.plot_fig, self.dash_patch = reset_fig()
+        self.plot_fig, temp_patch = reset_fig()
+        self.readAndUpdateDashPatch(False, temp_patch)
 
         self.plot_file_name = "".join([os.getcwd(), "\\src\\dependencies\\", "plt_dat.html"])
 
@@ -539,6 +542,29 @@ class DataBackend:
         # ljud.eDAC(self.u6_labjack, 1, 3)  # Set the reference voltage for the MAX5216 DAC
         self.u6_labjack.getFeedback(u6.DAC1_16(self.u6_labjack.voltageToDACBits(3, 1, True)))
         self.labjack_connect = True
+
+    def readAndUpdateDashPatch(self, read_patch: bool = False, new_patch: Patch = Patch()) -> Patch:
+        """Read or update the dash patch. Toggling the dash_patch_accessed if the dash patch value is read.
+
+        Parameters
+        ----------
+        read_patch : bool, optional
+            Boolean indicating if the dash Patch object is to be read, by default False
+        new_patch : dash.Patch, optional
+            The new dash Patch object to be written.
+
+        Returns
+        -------
+        dash.Patch
+            The dash Patch object with the updated data.
+        """
+        if not read_patch:
+            self.dash_patch = new_patch
+            self.dash_patch_accessed = False
+            return self.dash_patch
+        else:
+            self.dash_patch_accessed = True
+            return self.dash_patch
 
     def bindingEnergyToVolt(self, binding_energy: float) -> float:
         """Convert the binding energy to voltage for the MAX5216 DAC.
@@ -653,7 +679,8 @@ class DataBackend:
             self.remaining_time = round(total_time_s / 60, 2)
             self.current_progress = 0
             self.measurement_thread = threading.Thread(target=self.runBatchMeasurement, args=[batch_dataframe])
-            self.plot_fig, self.dash_patch = reset_fig(batch_mode=True)
+            self.plot_fig, temp_patch = reset_fig(batch_mode=True)
+            self.readAndUpdateDashPatch(False, temp_patch)
         else:
             self.total_steps = int(abs((end_ev - start_ev) / step_ev + 1) * pass_no)
             total_time_s = time_per_step * pass_no * ((end_ev - start_ev) / step_ev + 1)
@@ -665,7 +692,8 @@ class DataBackend:
                 target=self.runSingleMeasurement,
                 args=[start_ev, end_ev, step_ev, time_per_step, pass_no, 0, 0, False],
             )
-            self.plot_fig, self.dash_patch = reset_fig()
+            self.plot_fig, temp_patch = reset_fig()
+            self.readAndUpdateDashPatch(False, temp_patch)
 
         self.typ_schema = {
             "Binding Energy [eV]": pl.Float64,
@@ -805,21 +833,23 @@ class DataBackend:
             new_df = pl.DataFrame(new_data, schema=self.typ_schema)
             self.data_table = pl.concat([self.data_table, new_df])
             if not type_batch:
-                self.plot_fig, self.dash_patch = addOrUpdatePlotTraceData(
+                self.plot_fig, temp_patch = addOrUpdatePlotTraceData(
                     self.plot_fig,
                     pass_index,
                     plot_dataframe["Binding Energy [eV]"],
                     plot_dataframe["Counts"],
                     f"pass_{pass_index}",
                 )
+                self.readAndUpdateDashPatch(False, temp_patch)
             else:
-                self.plot_fig, self.dash_patch = addOrUpdatePlotTraceData(
+                self.plot_fig, temp_patch = addOrUpdatePlotTraceData(
                     self.plot_fig,
                     self.batch_pass_no,
                     plot_dataframe["Binding Energy [eV]"],
                     plot_dataframe["Counts_per_milli [/ms]"],
                     f"b{batch_no}_pass_{pass_index}",
                 )
+                self.readAndUpdateDashPatch(False, temp_patch)
             # if not type_batch:
             #     if existing_passes < pass_index:
             #         self.plot_fig.add_trace(
@@ -1646,6 +1676,12 @@ app.layout = html.Div(
         dcc.Store("batch-seq-dataframe", data=blank_data.to_dict("records")),
         dcc.Store("xray-source-command-clicked", data=False),
         dcc.Store("xray-source-inhibit-clicked", data=False),
+        dcc.Store("current-progress", data=0),
+        dcc.Store("current-kinetic-energy", data=0.0),
+        dcc.Store("current-binding-energy", data=0.0),
+        dcc.Store("elapsed-time", data=0.0),
+        dcc.Store("remaining-time", data=0.0),
+        dcc.Store("filename-validity-store", data={}),
         dcc.Interval(id="progress-interval", interval=300, disabled=True),
         dcc.Interval(id="xray-modal-interval-component", interval=1000, disabled=True),
         dcc.Interval(id="interval-component", interval=300, disabled=True),
@@ -1780,33 +1816,42 @@ clientside_callback(
 
 # ********************************************************************************
 
-
-@app.callback(
+clientside_callback(
+    ClientsideFunction("clientside", "save_on_complete_toggled"),
     Output("save-on-complete-filename", "disabled"),
+    Output("start-click", "disabled", allow_duplicate=True),
     Input("save-on-complete-switch", "value"),
     prevent_initial_call=True,
 )
-def toggleSaveOnCompleteInput(switch_value: bool) -> bool:
-    """Method to toggle the save on complete input field based on the switch value.
+"""Method to toggle the save on complete input field based on the switch value."""
 
-    Parameters
-    ----------
-    switch_value : bool
-        Boolean indicating the state of the save on complete switch. True if the switch is ON, False if is is OFF.
 
-    Returns
-    -------
-    bool
-        Returns True if the switch is OFF, False if it is ON. This is used to enable or disable the input field for the filename to save on completion.
-    """
+# @callback(
+#     Output("save-on-complete-filename", "disabled"),
+#     Input("save-on-complete-switch", "value"),
+#     prevent_initial_call=True,
+# )
+# def toggleSaveOnCompleteInput(switch_value: bool) -> bool:
+#     """Method to toggle the save on complete input field based on the switch value.
 
-    return not switch_value
+#     Parameters
+#     ----------
+#     switch_value : bool
+#         Boolean indicating the state of the save on complete switch. True if the switch is ON, False if is is OFF.
+
+#     Returns
+#     -------
+#     bool
+#         Returns True if the switch is OFF, False if it is ON. This is used to enable or disable the input field for the filename to save on completion.
+#     """
+
+#     return not switch_value
 
 
 # ********************************************************************************
 
 
-@app.callback(
+@callback(
     Output("card-content", "children"),
     Output("start-ev-value", "data"),
     Output("end-ev-value", "data"),
@@ -2169,8 +2214,8 @@ def startMeasurement(
 
 # ********************************************************************************
 
-
-@callback(
+clientside_callback(
+    ClientsideFunction("clientside", "check_running_progress"),
     Output(
         "start-click",
         "disabled",
@@ -2216,48 +2261,96 @@ def startMeasurement(
     State("save-on-complete-switch", "value"),
     prevent_initial_call=True,
 )
-def checkRunningProgress(
-    not_running: bool, save_filename_switch: bool
-) -> tuple[bool, bool, bool, str, bool, bool, bool, bool, bool]:
-    """Method called when the check-running boolean in the Store is updated.
 
-    Parameters
-    ----------
-    running : bool
-        Boolean indicating if the measurement is running.
 
-    save_filename_switch : bool
-        Boolean indicating if the save on complete switch is ON or OFF.
+# @callback(
+#     Output(
+#         "start-click",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Output(
+#         "stop-click",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Output(
+#         "shutdown-app",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Output("meas-select-card", "class_name"),
+#     Output(
+#         "save-results",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Output(
+#         "source-select",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Output(
+#         "save-on-complete-switch",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Output(
+#         "save-on-complete-filename",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Output(
+#         "remote-xray-source-modal",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Input("progress-interval", "disabled"),
+#     State("save-on-complete-switch", "value"),
+#     prevent_initial_call=True,
+# )
+# def checkRunningProgress(
+#     not_running: bool, save_filename_switch: bool
+# ) -> tuple[bool, bool, bool, str, bool, bool, bool, bool, bool]:
+#     """Method called when the check-running boolean in the Store is updated.
 
-    Returns
-    -------
-    tuple[bool, bool, bool, str, bool, bool, bool, bool, bool, bool]
-        The boolean indicating if the start button is disabled, boolean indicating if the stop button is disabled, boolean indicating if the shutdown button is disabled, the class name for the Card component, boolean indicating if the graph interval is disabled, boolean indicating if the progress interval is disabled, boolean indicating if the save button is disabled, boolean indicating if the select source switch is disabled, boolean indicating if the save on completion switch is disabled, boolean indicating if the save on complete filename is disabled, and the boolean indicating if the remote operate X-ray button is disabled respectively.
-    """
-    if not not_running:
-        return (
-            True,  # disable the start button
-            False,  # disable the stop button
-            True,  # disable the shutdown button
-            "mb-3 card-disable",  # class name for the Card component
-            True,  # disable the save results button
-            True,  # disable the source select switch
-            True,  # disable the save on complete switch
-            True,  # disable the save on complete input field
-            True,  # disable the remote operate X-ray button
-        )
-    else:
-        return (
-            False,  # disable the start button
-            True,  # disable the stop button
-            False,  # disable the shutdown button
-            "mb-3",  # class name for the Card component
-            False,  # disable the save results button
-            False,  # disable the source select switch
-            False,  # disable the save on complete switch
-            not save_filename_switch,  # disable the save on complete input field
-            False,  # disable the remote operate X-ray button
-        )
+#     Parameters
+#     ----------
+#     running : bool
+#         Boolean indicating if the measurement is running.
+
+#     save_filename_switch : bool
+#         Boolean indicating if the save on complete switch is ON or OFF.
+
+#     Returns
+#     -------
+#     tuple[bool, bool, bool, str, bool, bool, bool, bool, bool, bool]
+#         The boolean indicating if the start button is disabled, boolean indicating if the stop button is disabled, boolean indicating if the shutdown button is disabled, the class name for the Card component, boolean indicating if the graph interval is disabled, boolean indicating if the progress interval is disabled, boolean indicating if the save button is disabled, boolean indicating if the select source switch is disabled, boolean indicating if the save on completion switch is disabled, boolean indicating if the save on complete filename is disabled, and the boolean indicating if the remote operate X-ray button is disabled respectively.
+#     """
+#     if not not_running:
+#         return (
+#             True,  # disable the start button
+#             False,  # disable the stop button
+#             True,  # disable the shutdown button
+#             "mb-3 card-disable",  # class name for the Card component
+#             True,  # disable the save results button
+#             True,  # disable the source select switch
+#             True,  # disable the save on complete switch
+#             True,  # disable the save on complete input field
+#             True,  # disable the remote operate X-ray button
+#         )
+#     else:
+#         return (
+#             False,  # disable the start button
+#             True,  # disable the stop button
+#             False,  # disable the shutdown button
+#             "mb-3",  # class name for the Card component
+#             False,  # disable the save results button
+#             False,  # disable the source select switch
+#             False,  # disable the save on complete switch
+#             not save_filename_switch,  # disable the save on complete input field
+#             False,  # disable the remote operate X-ray button
+#         )
 
 
 # ********************************************************************************
@@ -2299,28 +2392,36 @@ def updateProgress(n: int, interval_disabled: bool) -> bool | dash._callback.NoU
 
 # ********************************************************************************
 
-
-@callback(
+clientside_callback(
+    ClientsideFunction("clientside", "wind_up_after_measurement"),
     Output("progress-bar", "striped"),
     Output("progress-bar", "animated"),
     Input("progress-interval", "disabled"),
     prevent_initial_call=True,
 )
-def windUpAfterMeasurement(interval_disabled: bool) -> tuple[bool, bool]:
-    """Method called when the progress-interval disabled is toggled.
 
-    Parameters
-    ----------
-    interval_disabled : bool
-        Boolean indicating if the progress-interval is disabled.
 
-    Returns
-    -------
-    tuple[bool, bool]
-        Boolean indicating if the progress bar is to be striped, and animated respectively.
-    """
+# @callback(
+#     Output("progress-bar", "striped"),
+#     Output("progress-bar", "animated"),
+#     Input("progress-interval", "disabled"),
+#     prevent_initial_call=True,
+# )
+# def windUpAfterMeasurement(interval_disabled: bool) -> tuple[bool, bool]:
+#     """Method called when the progress-interval disabled is toggled.
 
-    return not interval_disabled, not interval_disabled
+#     Parameters
+#     ----------
+#     interval_disabled : bool
+#         Boolean indicating if the progress-interval is disabled.
+
+#     Returns
+#     -------
+#     tuple[bool, bool]
+#         Boolean indicating if the progress bar is to be striped, and animated respectively.
+#     """
+
+#     return not interval_disabled, not interval_disabled
 
 
 # *********************************************************************************
@@ -2338,46 +2439,75 @@ def windUpAfterMeasurement(interval_disabled: bool) -> tuple[bool, bool]:
         "disabled",
         allow_duplicate=True,
     ),
-    Output("kin-energy-disp", "value"),
-    Output("binding-energy-disp", "value"),
-    Output("time-elapsed-disp", "value"),
-    Output("time-remain-disp", "value"),
+    Output("current-kinetic-energy", "data"),
+    Output("current-binding-energy", "data"),
+    Output("elapsed-time", "data"),
+    Output("remaining-time", "data"),
     Input("interval-component", "n_intervals"),
+    State("switch", "value"),
     prevent_initial_call=True,
 )
-def updateGraphLive(n: int) -> tuple[int, Patch, bool, float, float, float, float]:
+def updateGraphLive(
+    n: int, switch_on: bool
+) -> tuple[
+    int | dash._callback.NoUpdate,
+    Patch | dash._callback.NoUpdate,
+    bool | dash._callback.NoUpdate,
+    float | dash._callback.NoUpdate,
+    float | dash._callback.NoUpdate,
+    float | dash._callback.NoUpdate,
+    float | dash._callback.NoUpdate,
+]:
     """Method that is called in periodic intervals.
 
     Parameters
     ----------
     n : int
         The iteration of the update interval.
+    switch_on : bool
+        Boolean indicating if the light mode theme is switched on.
 
     Returns
     -------
     tuple[int, dash.Patch, bool, float, float, float, float]
         Integer for the current value of the progress bar, the patch for the figure object and the boolean indicating if the interval-component is to be disabled, current kinetic energy value of the measurement, current binding energy value of the measurement, the elapsed time of the measurement, the remaining time of the measurement, respectively.
     """
-    patched_figure = Patch()
-    old_fig = data_backend.plot_fig
-    data = old_fig.to_dict()["data"]
-    patched_figure["data"] = data
 
-    return (
-        data_backend.current_progress,
-        data_backend.dash_patch,
-        not data_backend.meas_running,
-        data_backend.current_kinetic_energy,
-        data_backend.current_binding_energy,
-        data_backend.elapsed_time,
-        data_backend.remaining_time,
-    )
+    if not data_backend.dash_patch_accessed:
+        patched_figure = data_backend.readAndUpdateDashPatch(True)
+        template = BOOTSTRAP if switch_on else BOOTSTRAP_DARK
+        patched_figure["layout"]["template"] = template
+
+        return (
+            data_backend.current_progress,
+            patched_figure,
+            not data_backend.meas_running,
+            data_backend.current_kinetic_energy,
+            data_backend.current_binding_energy,
+            data_backend.elapsed_time,
+            data_backend.remaining_time,
+        )
+    else:
+        return no_update, no_update, no_update, no_update, no_update, no_update, no_update
+
+
+clientside_callback(
+    ClientsideFunction("clientside", "update_display_values"),
+    Output("kin-energy-disp", "value"),
+    Output("binding-energy-disp", "value"),
+    Output("time-elapsed-disp", "value"),
+    Output("time-remain-disp", "value"),
+    Input("current-kinetic-energy", "data"),
+    Input("current-binding-energy", "data"),
+    Input("elapsed-time", "data"),
+    Input("remaining-time", "data"),
+)
 
 
 # *********************************************************************************
 
-
-@callback(
+clientside_callback(
+    ClientsideFunction("clientside", "confirm_file_save_modal_open"),
     Output(
         "modal",
         "is_open",
@@ -2388,92 +2518,142 @@ def updateGraphLive(n: int) -> tuple[int, Patch, bool, float, float, float, floa
     State("modal", "is_open"),
     prevent_initial_call=True,
 )
-def confirmFileSaveModalOpen(n1: int, n2: int, is_open: bool) -> bool:
-    """Method called when the Save results button is clicked. It will open a Modal to confirm the file save.
 
-    Parameters
-    ----------
-    n1 : int
-        Integer holding the no. of clicks on the Save button.
-    n2 : int
-        Integer holding the number of clicks on the Cancel button in the Modal.
-    is_open : bool
-        Boolean indicating if the Modal is currently open.
 
-    Returns
-    -------
-    bool
-        Boolean indicating if the Modal is to be opened.
-    """
-    if n1 or n2:
-        return not is_open
-    return is_open
+# @callback(
+#     Output(
+#         "modal",
+#         "is_open",
+#         allow_duplicate=True,
+#     ),
+#     Input("save-results", "n_clicks"),
+#     Input("cancel-save", "n_clicks"),
+#     State("modal", "is_open"),
+#     prevent_initial_call=True,
+# )
+# def confirmFileSaveModalOpen(n1: int, n2: int, is_open: bool) -> bool:
+#     """Method called when the Save results button is clicked. It will open a Modal to confirm the file save.
+
+#     Parameters
+#     ----------
+#     n1 : int
+#         Integer holding the no. of clicks on the Save button.
+#     n2 : int
+#         Integer holding the number of clicks on the Cancel button in the Modal.
+#     is_open : bool
+#         Boolean indicating if the Modal is currently open.
+
+#     Returns
+#     -------
+#     bool
+#         Boolean indicating if the Modal is to be opened.
+#     """
+#     if n1 or n2:
+#         return not is_open
+#     return is_open
 
 
 # *********************************************************************************
 
 
 @callback(
+    Output("filename-validity-store", "data"),
+    Input("save-as-file", "value"),
+    Input("save-on-complete-filename", "value"),
+    Input("save-on-complete-switch", "value"),
+    prevent_initial_call=True,
+)
+def checkFilenameValidity(filename1, filename2, not_used):
+    ctx_id = ctx.triggered_id
+    filename = filename1 if ctx_id == "save-as-file" else filename2
+
+    if filename is None:
+        filename = ""
+
+    pattern = r'[^.\\/:*?"\'<>|]+'
+    match = re.fullmatch(pattern, filename)
+    if match is not None:
+        is_valid = True
+    else:
+        is_valid = False
+
+    return {"target": ctx_id, "valid": is_valid}
+
+
+clientside_callback(
+    ClientsideFunction("clientside", "check_filename_validity"),
     Output("confirm-save", "disabled"),
     Output("save-as-file", "valid"),
     Output("save-as-file", "invalid"),
     Output("save-on-complete-filename", "valid"),
     Output("save-on-complete-filename", "invalid"),
-    Output(
-        "start-click",
-        "disabled",
-        allow_duplicate=True,
-    ),
-    Input("save-as-file", "value"),
-    Input("save-on-complete-filename", "value"),
+    Output("start-click", "disabled", allow_duplicate=True),
+    Input("filename-validity-store", "data"),
     prevent_initial_call=True,
 )
-def checkFilenameValidity(
-    filename1: str, filename2: str
-) -> tuple[bool | dash._callback.NoUpdate, bool, bool, bool, bool, bool | dash._callback.NoUpdate]:
-    """Method to check filename validity.
 
-    Parameters
-    ----------
-    filename1 : str
-        Name of the file to be saved as.
 
-    filename2 : str
-        Name of the file to be saved as.
+# @callback(
+#     Output("confirm-save", "disabled"),
+#     Output("save-as-file", "valid"),
+#     Output("save-as-file", "invalid"),
+#     Output("save-on-complete-filename", "valid"),
+#     Output("save-on-complete-filename", "invalid"),
+#     Output(
+#         "start-click",
+#         "disabled",
+#         allow_duplicate=True,
+#     ),
+#     Input("save-as-file", "value"),
+#     Input("save-on-complete-filename", "value"),
+#     prevent_initial_call=True,
+# )
+# def checkFilenameValidity(
+#     filename1: str, filename2: str
+# ) -> tuple[bool | dash._callback.NoUpdate, bool, bool, bool, bool, bool | dash._callback.NoUpdate]:
+#     """Method to check filename validity.
 
-    Returns
-    -------
-    tuple[bool | dash._callback.NoUpdate, bool, bool, bool, bool | dash._callback.NoUpdate]
-        Boolean to disable the save button in the modal, enable valid property of both the input field, enable invalid property of both the input field, and the boolean whether the start button is disabled respectively.
-    """
+#     Parameters
+#     ----------
+#     filename1 : str
+#         Name of the file to be saved as.
 
-    filename_context_id = ctx.triggered_id
+#     filename2 : str
+#         Name of the file to be saved as.
 
-    filename = filename1
+#     Returns
+#     -------
+#     tuple[bool | dash._callback.NoUpdate, bool, bool, bool, bool | dash._callback.NoUpdate]
+#         Boolean to disable the save button in the modal, enable valid property of both the input field, enable invalid property of both the input field, and the boolean whether the start button is disabled respectively.
+#     """
 
-    if filename_context_id == "save-on-complete-filename":
-        filename = filename2
+#     filename_context_id = ctx.triggered_id
 
-    pattern = r'[^.\\/:*?"\'<>|]+'
-    match = re.fullmatch(pattern, filename)
-    if match is not None:
-        return (
-            no_update if filename_context_id == "save-on-complete-filename" else False,
-            True,
-            False,
-            True,
-            False,
-            False if filename_context_id == "save-on-complete-filename" else no_update,
-        )
-    else:
-        return (
-            no_update if filename_context_id == "save-on-complete-filename" else True,
-            False,
-            True,
-            False,
-            True,
-            True if filename_context_id == "save-on-complete-filename" else no_update,
-        )
+#     filename = filename1
+
+#     if filename_context_id == "save-on-complete-filename":
+#         filename = filename2
+
+#     pattern = r'[^.\\/:*?"\'<>|]+'
+#     match = re.fullmatch(pattern, filename)
+#     if match is not None:
+#         return (
+#             no_update if filename_context_id == "save-on-complete-filename" else False,
+#             True,
+#             False,
+#             True,
+#             False,
+#             False if filename_context_id == "save-on-complete-filename" else no_update,
+#         )
+#     else:
+#         return (
+#             no_update if filename_context_id == "save-on-complete-filename" else True,
+#             False,
+#             True,
+#             False,
+#             True,
+#             True if filename_context_id == "save-on-complete-filename" else no_update,
+#         )
 
 
 # ********************************************************************************
