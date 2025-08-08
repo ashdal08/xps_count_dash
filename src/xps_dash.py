@@ -41,7 +41,7 @@ import dash_bootstrap_components as dbc
 
 from dash_bootstrap_templates import load_figure_template
 
-load_figure_template(["bootstrap", "bootstrap_dark"])
+load_figure_template(["bootstrap", "bootstrap_dark"]) # type: ignore
 
 BOOTSTRAP = pio.templates["bootstrap"]
 BOOTSTRAP_DARK = pio.templates["bootstrap_dark"]
@@ -381,7 +381,7 @@ def addOrUpdatePlotTraceData(
     tuple[plotly.graph_objects.Figure, dash.Patch]
         The plotly Figure object returned after adding or updating the trace, and the dash Patch object for updating the plot.
     """
-    existing_passes = len(fig["data"])
+    existing_passes = len(fig["data"]) # type: ignore
     dash_patch = Patch()
     if existing_passes < pass_index:
         fig.add_trace(
@@ -406,7 +406,7 @@ def addOrUpdatePlotTraceData(
     )
 
     for i, trace in enumerate(fig["data"]):
-        if trace["name"] == trace_name:
+        if trace["name"] == trace_name: # type: ignore
             dash_patch["data"][i]["x"].append(x_data.iloc[-1])
             dash_patch["data"][i]["y"].append(y_data.iloc[-1])
             break
@@ -1436,7 +1436,7 @@ def generate_batch_data_grid(dataframe: pd.DataFrame) -> list:
                         }
                         for i in dataframe.columns
                     ],
-                    data=dataframe.to_dict("records"),
+                    data=dataframe.to_dict("records"), # type: ignore
                     editable=True,
                     fixed_rows={"headers": True},
                     # filter_action="native",
@@ -1478,7 +1478,7 @@ def generate_batch_data_grid(dataframe: pd.DataFrame) -> list:
                             },
                             "border-left": "none",
                         },
-                    ],
+                    ], # type: ignore
                     style_cell={
                         "textAlign": "center",
                         "minWidth": "72px",
@@ -1497,7 +1497,7 @@ def generate_batch_data_grid(dataframe: pd.DataFrame) -> list:
                             "maxWidth": "30px",
                             # "whiteSpace": "normal",
                         }
-                    ],
+                    ], # type: ignore
                 ),
             ],
             class_name="table-container-mod",
@@ -1777,7 +1777,7 @@ app.layout = html.Div(
                         dcc.Graph(
                             id="graph",
                             figure=fig,
-                            config=CONFIG,
+                            config=CONFIG, # type: ignore
                             mathjax=True,
                             className="dcc-graph",
                         ),
