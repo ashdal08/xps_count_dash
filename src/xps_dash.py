@@ -41,7 +41,7 @@ import dash_bootstrap_components as dbc
 
 from dash_bootstrap_templates import load_figure_template
 
-load_figure_template(["bootstrap", "bootstrap_dark"]) # type: ignore
+load_figure_template(["bootstrap", "bootstrap_dark"])  # type: ignore
 
 BOOTSTRAP = pio.templates["bootstrap"]
 BOOTSTRAP_DARK = pio.templates["bootstrap_dark"]
@@ -381,7 +381,7 @@ def addOrUpdatePlotTraceData(
     tuple[plotly.graph_objects.Figure, dash.Patch]
         The plotly Figure object returned after adding or updating the trace, and the dash Patch object for updating the plot.
     """
-    existing_passes = len(fig["data"]) # type: ignore
+    existing_passes = len(fig["data"])  # type: ignore
     dash_patch = Patch()
     if existing_passes < pass_index:
         fig.add_trace(
@@ -406,7 +406,7 @@ def addOrUpdatePlotTraceData(
     )
 
     for i, trace in enumerate(fig["data"]):
-        if trace["name"] == trace_name: # type: ignore
+        if trace["name"] == trace_name:  # type: ignore
             dash_patch["data"][i]["x"].append(x_data.iloc[-1])
             dash_patch["data"][i]["y"].append(y_data.iloc[-1])
             break
@@ -758,7 +758,7 @@ class DataBackend:
             The type of measurement. True for batch measurement, False for single measurement, by default False.
 
         """
-        self.setSpiVoltage(self.bindingEnergyToVolt(round(start_ev,3)))
+        self.setSpiVoltage(self.bindingEnergyToVolt(round(start_ev, 3)))
 
         pass_index = 1
 
@@ -899,8 +899,8 @@ class DataBackend:
             self.remaining_time -= time_taken / 60
             self.elapsed_time += time_taken / 60
 
-            if self.setpoint_ev + round(step_ev,3) <= round(end_ev,3):
-                self.setpoint_ev += round(step_ev,3)
+            if self.setpoint_ev + round(step_ev, 3) <= round(end_ev, 3):
+                self.setpoint_ev += round(step_ev, 3)
                 step_no += 1
                 if type_batch:
                     self.batch_step_no += 1
@@ -908,7 +908,7 @@ class DataBackend:
             else:
                 pass_index += 1
                 if pass_index <= pass_no:
-                    self.setSpiVoltage(self.bindingEnergyToVolt(round(start_ev,3)))
+                    self.setSpiVoltage(self.bindingEnergyToVolt(round(start_ev, 3)))
                     step_no += 1
                 if type_batch:
                     self.batch_pass_no += 1
@@ -1438,7 +1438,7 @@ def generate_batch_data_grid(dataframe: pd.DataFrame) -> list:
                         }
                         for i in dataframe.columns
                     ],
-                    data=dataframe.to_dict("records"), # type: ignore
+                    data=dataframe.to_dict("records"),  # type: ignore
                     editable=True,
                     fixed_rows={"headers": True},
                     # filter_action="native",
@@ -1480,7 +1480,7 @@ def generate_batch_data_grid(dataframe: pd.DataFrame) -> list:
                             },
                             "border-left": "none",
                         },
-                    ], # type: ignore
+                    ],  # type: ignore
                     style_cell={
                         "textAlign": "center",
                         "minWidth": "72px",
@@ -1499,7 +1499,7 @@ def generate_batch_data_grid(dataframe: pd.DataFrame) -> list:
                             "maxWidth": "30px",
                             # "whiteSpace": "normal",
                         }
-                    ], # type: ignore
+                    ],  # type: ignore
                 ),
             ],
             class_name="table-container-mod",
@@ -1732,14 +1732,16 @@ app.layout = html.Div(
                             pattern=r'[^.\\/:*?"<>|]+',
                             # title="Filename should not contain .\\/:*?\"'<>|",
                         ),
-                        dbc.Progress(
-                            id="progress-bar",
-                            value="0",
-                            striped=True,
-                            animated=True,
-                            class_name="mb-3",
+                        html.Div(
+                            dbc.Progress(
+                                id="progress-bar",
+                                value="0",
+                                striped=True,
+                                animated=True,
+                                class_name="mb-3",
+                            )
                         ),
-                        dbc.Row(status_displays),
+                        dbc.Row(html.Div(status_displays)),
                         dbc.Row(
                             [
                                 dbc.Col(
@@ -1776,12 +1778,14 @@ app.layout = html.Div(
                 ),
                 dbc.Col(
                     [
-                        dcc.Graph(
-                            id="graph",
-                            figure=fig,
-                            config=CONFIG, # type: ignore
-                            mathjax=True,
-                            className="dcc-graph",
+                        html.Div(
+                            dcc.Graph(
+                                id="graph",
+                                figure=fig,
+                                config=CONFIG,  # type: ignore
+                                mathjax=True,
+                                className="dcc-graph",
+                            )
                         ),
                         dcc.Download(id="download-data"),
                         dcc.Download(id="download-plot"),
