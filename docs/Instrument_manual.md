@@ -48,11 +48,9 @@ Make sure the ion source is not operating. Close the gas supply valve completely
 
 Ensure vacuum is **less than 5E-8 mbar**.
 
-### Switching ON
-
 Turn on the water supply. Flow rate should be greater than 3 l/min.
 
-On the TX400 control unit
+#### For the TX400 control unit
 
 1. Before pressing the power button follow steps 2-4.
 2. Select Filament 1 (Mg) or Filament 2 (Al).
@@ -62,16 +60,37 @@ On the TX400 control unit
 6. Increase filament current **slowly over 5-10 minutes to 2.5 A (for Filament 1 or Mg) or 2.2 A (for filament 2 or Al)** to outgas the filament.
 7. Turn the filament current down to zero slowly.
 
-On the Spellman SL600 Supply unit
+#### For the Spellman SL600 Supply unit
 
 1. Before switching the power ON set *KILOVOLT* potenmtiometer to zero.
 2. Switch POWER on.
 3. The interlock closed **INTLK CLSD** display should be illuminated. If not, check the water supply before continuing.
 4. Set the *milliamperes* dial to 5.0 (50 %) initially.
-5. Turn on the HV by depressing the *HIGH VOLTAGE* (LED illuminates) and slowly increase to **15kV over 10 minutes**. There maybe arcs and pressure bursts initially but the HV should stabilize after 1 or 2 minutes. The *milliamperes* meter should display less than 5 mA, if not the water supply might be contaminated and needs to be cleaned before proceeding.
+5. Turn on the HV by depressing the *HIGH VOLTAGE* (LED illuminates) and slowly increase to **15kV over 10 minutes** (in case of normal use, ramp up only to the desired HV for e.g. 10kV). There maybe arcs and pressure bursts initially but the HV should stabilize after 1 or 2 minutes. The *milliamperes* meter should display less than 5 mA, if not the water supply might be contaminated and needs to be cleaned before proceeding.
 6. Turn the HV down to the required value (for e.g. 10kV)
 
-On the TX400 control unit
+#### Again for the TX400 control unit
+
+1. Increase the filament current slowly until 3.0 to 5.0 mA emission current is seen (For Mg filament this would be 2.2 to 2.4 A, for Al filament this should be around 2.0 to 2.1 A). **Do not exceed 2.5 A for filament 1 (Mg) or 2.3 A for filament 2 (Al)**.
+2. Set the *emission current* dial to 0.5 (5 %) and switch the TX400 unit to *Emission* control.
+3. Increase the emission current slowly to 5 mA or 10 mA depending on the requirement. The filaments might outgas during this process, make sure that the pressure in the chamber is **at or below 1E-7 mbar** by regulating the emission current.
+
+### Regular Procedure
+
+#### Switching ON
+
+Turn on the water supply. Flow rate should be greater than 3 l/min.
+
+#### For the Spellman SL600 Supply unit
+
+1. Before switching the power ON set *KILOVOLT* potenmtiometer to zero.
+2. Switch POWER on.
+3. The interlock closed **INTLK CLSD** display should be illuminated. If not, check the water supply before continuing.
+4. Set the *milliamperes* dial to 5.0 (50 %) initially.
+5. Turn on the HV by depressing the *HIGH VOLTAGE* (LED illuminates) and slowly increase to **15kV over 10 minutes** (in case of normal use, ramp up only to the desired HV for e.g. 10kV). There maybe arcs and pressure bursts initially but the HV should stabilize after 1 or 2 minutes. The *milliamperes* meter should display less than 5 mA, if not the water supply might be contaminated and needs to be cleaned before proceeding.
+6. Turn the HV down to the required value (for e.g. 10kV)
+
+#### For the TX400 control unit
 
 1. Increase the filament current slowly until 3.0 to 5.0 mA emission current is seen (For Mg filament this would be 2.2 to 2.4 A, for Al filament this should be around 2.0 to 2.1 A). **Do not exceed 2.5 A for filament 1 (Mg) or 2.3 A for filament 2 (Al)**.
 2. Set the *emission current* dial to 0.5 (5 %) and switch the TX400 unit to *Emission* control.
@@ -84,7 +103,7 @@ On the TX400 control unit
 >* **Filament 1 or Mg : 2.0 - 2.5 A. These are pure tungsten filaments.**
 >* **Filament 2 or Al : 2.0 - 2.3 A. These are Yttria coated tungsten filamnets.**
 
-### Switching OFF
+#### Switching OFF
 
 On the TX400 control unit
 
