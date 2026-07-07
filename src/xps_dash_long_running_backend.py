@@ -1,45 +1,43 @@
 import math
+import os
 import re
 import time
-import os
 
 os.environ["MIMALLOC_ABANDONED_PAGE_RESET"] = "1"
 
-import numpy as np
-import pandas as pd
-import polars as pl
-
 import threading
 
-
+import dash
+import dash_bootstrap_components as dbc
+import diskcache
+import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
-
-from gevent.pywsgi import WSGIServer
+import polars as pl
 import waitress
+from dash import (
+    ClientsideFunction,
+    Dash,
+    DiskcacheManager,
+    Input,
+    Output,
+    Patch,
+    State,
+    callback,
+    clientside_callback,
+    ctx,
+    dash_table,
+    dcc,
+    html,
+    no_update,
+    set_props,
+)
+from dash_bootstrap_templates import load_figure_template
+from gevent.pywsgi import WSGIServer
 
 # import u6
 from dependencies import dummy_labjack_u6 as u6
-
-from dash import (
-    Dash,
-    html,
-    Input,
-    Output,
-    callback,
-    dcc,
-    clientside_callback,
-    Patch,
-    State,
-    ClientsideFunction,
-    dash_table,
-    ctx,
-    no_update,
-)
-import dash
-import dash_bootstrap_components as dbc
-
-from dash_bootstrap_templates import load_figure_template
 
 load_figure_template(["bootstrap", "bootstrap_dark"])  # type: ignore
 
@@ -1057,10 +1055,14 @@ data_backend = DataBackend()
 fig, not_used = reset_fig()
 """The plotly figure to be displayed in the plot area of the dash app."""
 
+cache = diskcache.Cache("./cache")
+background_callback_manager = DiskcacheManager(cache)
+
 
 app = Dash(
     __name__,  # external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME], #now served locally in the assets folder
     title="XPS",
+    background_callback_manager=background_callback_manager,
 )
 """The dash app variable."""
 
@@ -1675,6 +1677,8 @@ app.layout = html.Div(
         dcc.Store("time-step-value", data=1.0),
         dcc.Store("meas-passes-value", data=1),
         dcc.Store(id="start-mode", data="single"),
+        dcc.Store("single-measurement-store", data=False),
+        dcc.Store("batch-measurement-store", data=False),
         dcc.Store("batch-seq-dataframe", data=blank_data.to_dict("records")),
         dcc.Store("xray-source-command-clicked", data=False),
         dcc.Store("xray-source-inhibit-clicked", data=False),
@@ -2120,23 +2124,18 @@ def cancelOrStopMeasurement(n: int) -> None:
 
 @callback(
     Output(
+        "batch-measurement-store",
+        "data",
+        allow_duplicate=True,
+    ),
+    Output(
         "check-running",
         "data",
         allow_duplicate=True,
     ),
     Output(
-        "interval-component",
-        "disabled",
-        allow_duplicate=True,
-    ),
-    Output(
         "progress-interval",
         "disabled",
-        allow_duplicate=True,
-    ),
-    Output(
-        "interval-component",
-        "interval",
         allow_duplicate=True,
     ),
     Output(
@@ -2170,7 +2169,7 @@ def startMeasurement(
     batch_dataframe: dict,
     source_mg: bool,
     switch_on: bool,
-) -> tuple[bool, bool, bool, int, int, go.Figure]:
+) -> tuple[bool, bool, bool, int, go.Figure]:
     """Method called after the initial preparation of the measurement was done.
 
     Parameters
@@ -2196,23 +2195,399 @@ def startMeasurement(
 
     Returns
     -------
-    tuple[bool, bool, bool, int, int, plotly.graph_objects.Figure]
-        Boolean indicating if the measurement is running, boolean if the interval-component is to be disabled, boolean if the progress-interval is to be disabled, the interval ms for the interval-component, the interval ms for the progress-interval, the plotly Figure object, respectively.
+    tuple[bool, bool, bool, int, plotly.graph_objects.Figure]
+        Boolean indicating the measurement mode, if the measurement is running, boolean if the progress-interval is to be disabled, the interval ms for the progress-interval, the plotly Figure object, respectively.
     """
-    batch_sett = pd.DataFrame(batch_dataframe)
     dark_theme = False if switch_on else True
-    interval_time = 1000
     if mode in "single":
-        data_backend.startMeasurement(start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg)
         fig, test = reset_fig(theme_dark=dark_theme)
-        interval_time = int(time_step * 1000)
+        return False, True, False, 1000, fig
     else:
-        data_backend.startMeasurement(start_ev, end_ev, ev_step, time_step, pass_no, batch_sett, source_mg, True)
         fig, test = reset_fig(theme_dark=dark_theme, batch_mode=True)
-        interval_time = batch_sett["Time [s/eV]"].min() * 1000
+        return True, True, False, 1000, fig
 
-    return True, False, False, interval_time, 1000, fig
 
+@callback(
+    Input("batch-measurement-store", "data"),
+    State("start-ev-value", "data"),
+    State("end-ev-value", "data"),
+    State("ev-step-value", "data"),
+    State("time-step-value", "data"),
+    State("meas-passes-value", "data"),
+    State("batch-seq-dataframe", "data"),
+    State("source-select", "value"),
+    progress=[
+        Output("graph", "figure"),
+        Output("current-progress", "data"),
+        Output("current-kinetic-energy", "data"),
+        Output("current-binding-energy", "data"),
+        Output("elapsed-time", "data"),
+        Output("remaining-time", "data"),
+        Output("check-running", "data"),
+    ],
+    prevent_initial_call=True,
+    background=True,
+)
+def measurementLongCallback(
+    set_progress,
+    batch_mode: bool,
+    start_ev: float,
+    end_ev: float,
+    step_ev: float,
+    time_per_step: float,
+    pass_no: int,
+    batch_sett: dict,
+    source_mg: bool,
+) -> None:
+    """Method called to run a single measurement in the dash apps background manager for a long callback.
+
+    Parameters
+    ----------
+
+    triggered : bool
+        Boolean indicating if the single measurement store was triggered to run a single measurement.
+
+    """
+
+    def runSingleMeasurement(
+        fig_patch: Patch,
+        start_ev: float,
+        end_ev: float,
+        step_ev: float,
+        time_per_step: float,
+        pass_no: int,
+        batch_no: int,
+        batch_pass_no: int,
+        type_batch=False,
+    ) -> None:
+        """Run a single measurement.
+
+        Parameters
+        ----------
+        temp_patch : dash.Patch
+            The dash Patch object to be sent to the graph division of the app.
+        start_ev : float
+            The starting energy value for the measurement in eV.
+        end_ev : float
+            The ending energy value for the measurement in eV.
+        step_ev : float
+            The step width for the measurement in eV.
+        time_per_step : float
+            The time per step for the measurement in s.
+        pass_no : int
+            The number of passes for the measurement.
+        batch_no : int
+            The current batch number of the measurement if in batch mode.
+        batch_pass_no : int
+            The current pass no. of the meaasurement if in batch mode.
+        type_batch : bool
+            The type of measurement. True for batch measurement, False for single measurement, by default False.
+
+        """
+        temp_patch = fig_patch
+        data_backend.setSpiVoltage(data_backend.bindingEnergyToVolt(round(start_ev, 3)))
+
+        pass_index = 1
+
+        plot_dataframe = pd.DataFrame({
+            "Binding Energy [eV]": [],
+            "Counts": [],
+        })
+
+        if type_batch:
+            plot_dataframe = pd.DataFrame({
+                "Binding Energy [eV]": [],
+                "Counts_per_milli [/ms]": [],
+            })
+
+        step_no = 1
+
+        while pass_index <= pass_no:
+            # set_props("graph", {"figure": temp_patch})
+            # set_props("current-progress", {"data": data_backend.current_progress})
+            # set_props("current-kinetic-energy", {"data": data_backend.current_kinetic_energy})
+            # set_props("current-binding-energy", {"data": data_backend.current_binding_energy})
+            # set_props("elapsed-time", {"data": data_backend.elapsed_time})
+            # set_props("remaining-time", {"data": data_backend.remaining_time})
+
+            data_backend.u6_labjack.getFeedback(u6.Counter0(True))
+            start_time = time.time()
+            __refresh_time = 0
+            while __refresh_time <= time_per_step:
+                if data_backend.meas_interrupted:
+                    break
+                time.sleep(0.25)
+                __refresh_time += 0.25
+                # if __refresh_time + 1 < time_per_step:
+                #     time.sleep(1)
+                #     __refresh_time += 1
+                # else:
+                #     time.sleep(time_per_step - __refresh_time)
+                #     break
+
+            if data_backend.meas_interrupted:
+                data_backend.meas_interrupted = False
+                data_backend.meas_completed = True
+                data_backend.meas_running = False
+                data_backend.current_progress = 100
+                set_progress((
+                    temp_patch,
+                    100,
+                    no_update,
+                    no_update,
+                    no_update,
+                    0.0,
+                    False,
+                ))
+                time.sleep(2)
+                return
+            counts = data_backend.u6_labjack.getFeedback(u6.Counter0(False))[0]
+            time_taken = time.time() - start_time  # record in s
+            binding_energy = data_backend.setpoint_ev
+            counts_per_milli = round(counts / (time_taken * 1000), 6)
+            real_kin_energy = round(
+                data_backend.u6_labjack.getAIN(6, differential=True) * 5000 / 10, 6
+            )  # real kinetic energy being scanned from the HAC 5000 external metering. 0-5000 eV <=> 0-10 V
+            max5216_dac_voltage = round(data_backend.u6_labjack.getAIN(2), 6)
+
+            new_data = {
+                "Binding Energy [eV]": binding_energy,
+                "Pass No.": pass_index,
+                "Time_per_step [s]": time_taken,
+                "Counts": counts,
+                "Counts_per_milli [/ms]": counts_per_milli,
+                "Real_Kin_Energy [eV]": real_kin_energy,
+                "MAX5216_DAC_Voltage [V]": max5216_dac_voltage,
+            }
+
+            new_plot_point = pd.DataFrame({
+                "Binding Energy [eV]": [binding_energy],
+                "Counts": [counts],
+            })
+
+            if type_batch:
+                new_plot_point = pd.DataFrame({
+                    "Binding Energy [eV]": [binding_energy],
+                    "Counts_per_milli [/ms]": [counts_per_milli],
+                })
+
+            plot_dataframe = pd.concat([plot_dataframe, new_plot_point])
+
+            new_df = pl.DataFrame(new_data, schema=data_backend.typ_schema)
+            data_backend.data_table = pl.concat([data_backend.data_table, new_df])
+            cache.set("data_table", data_backend.data_table)
+            if not type_batch:
+                data_backend.plot_fig, temp_patch = addOrUpdatePlotTraceData(
+                    data_backend.plot_fig,
+                    pass_index,
+                    plot_dataframe["Binding Energy [eV]"],
+                    plot_dataframe["Counts"],
+                    f"pass_{pass_index}",
+                )
+                data_backend.readAndUpdateDashPatch(False, temp_patch)
+            else:
+                data_backend.plot_fig, temp_patch = addOrUpdatePlotTraceData(
+                    data_backend.plot_fig,
+                    data_backend.batch_pass_no,
+                    plot_dataframe["Binding Energy [eV]"],
+                    plot_dataframe["Counts_per_milli [/ms]"],
+                    f"b{batch_no}_pass_{pass_index}",
+                )
+                data_backend.readAndUpdateDashPatch(False, temp_patch)
+            data_backend.plot_fig.write_html(
+                data_backend.plot_file_name,
+                config=CONFIG,
+                include_plotlyjs="cdn",
+                include_mathjax="cdn",
+            )
+
+            if type_batch:
+                step_no = data_backend.batch_step_no
+            data_backend.current_progress = int(step_no * 100 / data_backend.total_steps)
+            data_backend.remaining_time -= time_taken / 60
+            data_backend.elapsed_time += time_taken / 60
+
+            if data_backend.setpoint_ev + round(step_ev, 3) <= round(end_ev, 3):
+                data_backend.setpoint_ev += round(step_ev, 3)
+                step_no += 1
+                if type_batch:
+                    data_backend.batch_step_no += 1
+                data_backend.setSpiVoltage(data_backend.bindingEnergyToVolt(data_backend.setpoint_ev))
+            else:
+                pass_index += 1
+                if pass_index <= pass_no:
+                    data_backend.setSpiVoltage(data_backend.bindingEnergyToVolt(round(start_ev, 3)))
+                    step_no += 1
+                if type_batch:
+                    data_backend.batch_pass_no += 1
+                    data_backend.batch_step_no += 1
+                plot_dataframe = pd.DataFrame({
+                    "Binding Energy [eV]": [],
+                    "Counts": [],
+                })
+                if type_batch:
+                    plot_dataframe = pd.DataFrame({
+                        "Binding Energy [eV]": [],
+                        "Counts_per_milli [/ms]": [],
+                    })
+
+            set_progress((
+                temp_patch,
+                data_backend.current_progress,
+                data_backend.current_kinetic_energy,
+                data_backend.current_binding_energy,
+                data_backend.elapsed_time,
+                data_backend.remaining_time,
+                True,
+            ))
+
+        if not type_batch:
+            data_backend.current_progress = 100
+            data_backend.remaining_time = 0.0
+            time.sleep(1)
+            set_progress((
+                temp_patch,
+                100,
+                no_update,
+                no_update,
+                no_update,
+                0.0,
+                False,
+            ))
+
+            time.sleep(1)
+
+            # set_props("current-progress", {"data": data_backend.current_progress})
+            # set_props("remaining-time", {"data": data_backend.remaining_time})
+            data_backend.meas_completed = True
+            data_backend.meas_running = False
+
+    def runBatchMeasurement(fig_patch: Patch, batch_dataframe: pd.DataFrame) -> None:
+        """Run a batch measurement.
+
+        Parameters
+        ----------
+        fig_patch : dash.Patch
+            The dash Patch object to be sent to the graph division of the app.
+        batch_dataframe : pandas.DataFrame
+            The pandas Dataframe with the measurement parameters from the batch mode grid.
+        """
+        temp_patch = fig_patch
+        batch_dataframe = batch_dataframe.dropna()
+        for row_index in range(0, len(batch_dataframe)):
+            if data_backend.meas_running:
+                start_ev = batch_dataframe["Start [eV]"][row_index]
+                if math.isnan(start_ev):
+                    break
+                end_ev = batch_dataframe["End [eV]"][row_index]
+                step_ev = batch_dataframe["Step [eV]"][row_index]
+                time_per_step = batch_dataframe["Time [s/eV]"][row_index]
+                pass_no = batch_dataframe["Passes"][row_index]
+
+                runSingleMeasurement(
+                    temp_patch,
+                    start_ev,
+                    end_ev,
+                    step_ev,
+                    time_per_step,
+                    pass_no,
+                    row_index + 1,
+                    data_backend.batch_pass_no,
+                    True,
+                )
+        data_backend.current_progress = 100
+        data_backend.remaining_time = 0.0
+        time.sleep(1)
+        # set_progress((no_update, 100, no_update, no_update, no_update, 0.0, False))
+        set_props("check-running", {"data": False})
+
+        time.sleep(1)
+
+        # set_props("current-progress", {"data": data_backend.current_progress})
+        # set_props("remaining-time", {"data": data_backend.remaining_time})
+        data_backend.meas_running = False
+        data_backend.meas_completed = True
+        data_backend.batch_pass_no = 1
+        data_backend.batch_step_no = 0
+
+    data_backend.total_steps = 0
+    data_backend.total_batch_passes = 0
+    data_backend.batch_pass_no = 1
+    data_backend.batch_step_no = 1
+    if source_mg:
+        data_backend.excitation_voltage = data_backend.EXCITATION_MG
+    else:
+        data_backend.excitation_voltage = data_backend.EXCITATION_AL
+
+    if batch_mode:
+        # if Batch Scan tab is selected in the UI. Batch scan mode is 1. Single scan mode is 0.
+
+        batch_dataframe = pd.DataFrame(batch_sett)
+
+        total_time_s = 0
+
+        for row_index in range(0, len(batch_dataframe)):
+            batch_time = 0
+            start_ev = batch_dataframe["Start [eV]"][row_index]
+            end_ev = batch_dataframe["End [eV]"][row_index]
+            step_ev = batch_dataframe["Step [eV]"][row_index]
+            time_per_step = batch_dataframe["Time [s/eV]"][row_index]
+            pass_no = batch_dataframe["Passes"][row_index]
+            if math.isnan(start_ev):
+                break
+            batch_time = (time_per_step) * (pass_no) * ((end_ev - start_ev) / step_ev + 1)
+            total_time_s += batch_time
+            data_backend.total_steps += int((end_ev - start_ev) / step_ev + 1) * pass_no
+            data_backend.total_batch_passes += pass_no
+
+        data_backend.elapsed_time = 0
+        data_backend.remaining_time = round(total_time_s / 60, 2)
+        data_backend.current_progress = 0
+        # data_backend.measurement_thread = threading.Thread(target=data_backend.runBatchMeasurement, args=[batch_dataframe])
+        data_backend.plot_fig, temp_patch_2 = reset_fig(batch_mode=True)
+        # self.readAndUpdateDashPatch(False, temp_patch)
+    else:
+        data_backend.total_steps = int(abs((end_ev - start_ev) / step_ev + 1) * pass_no)
+        total_time_s = time_per_step * pass_no * ((end_ev - start_ev) / step_ev + 1)
+        data_backend.remaining_time = round(total_time_s / 60, 2)
+        data_backend.elapsed_time = 0
+        data_backend.current_progress = 0
+
+        data_backend.plot_fig, temp_patch_2 = reset_fig()
+        # data_backend.readAndUpdateDashPatch(False, temp_patch)
+
+    data_backend.typ_schema = {
+        "Binding Energy [eV]": pl.Float64,
+        "Pass No.": pl.Float64,
+        "Time_per_step [s]": pl.Float64,
+        "Counts": pl.Float64,
+        "Counts_per_milli [/ms]": pl.Float64,
+        "Real_Kin_Energy [eV]": pl.Float64,
+        "MAX5216_DAC_Voltage [V]": pl.Float64,
+    }
+    data_temp = {
+        "Binding Energy [eV]": [],
+        "Pass No.": [],
+        "Time_per_step [s]": [],
+        "Counts": [],
+        "Counts_per_milli [/ms]": [],
+        "Real_Kin_Energy [eV]": [],
+        "MAX5216_DAC_Voltage [V]": [],
+    }
+
+    data_backend.data_table = pl.DataFrame(
+        data_temp,
+        schema=data_backend.typ_schema,
+    )
+
+    data_backend.meas_running = True
+    data_backend.meas_completed = False
+    data_backend.meas_interrupted = False
+
+    if batch_mode:
+        runBatchMeasurement(temp_patch_2, pd.DataFrame(batch_dataframe))
+    else:
+        runSingleMeasurement(temp_patch_2, start_ev, end_ev, step_ev, time_per_step, pass_no, 0, 0, False)
 
 # ********************************************************************************
 
@@ -2259,7 +2634,7 @@ clientside_callback(
         "disabled",
         allow_duplicate=True,
     ),
-    Input("progress-interval", "disabled"),
+    Input("check-running", "data"),
     State("save-on-complete-switch", "value"),
     prevent_initial_call=True,
 )
@@ -2398,7 +2773,7 @@ clientside_callback(
     ClientsideFunction("clientside", "wind_up_after_measurement"),
     Output("progress-bar", "striped"),
     Output("progress-bar", "animated"),
-    Input("progress-interval", "disabled"),
+    Input("check-running", "data"),
     prevent_initial_call=True,
 )
 
@@ -2427,70 +2802,6 @@ clientside_callback(
 
 
 # *********************************************************************************
-
-
-@callback(
-    Output("current-progress", "data"),
-    Output(
-        "graph",
-        "figure",
-        allow_duplicate=True,
-    ),
-    Output(
-        "interval-component",
-        "disabled",
-        allow_duplicate=True,
-    ),
-    Output("current-kinetic-energy", "data"),
-    Output("current-binding-energy", "data"),
-    Output("elapsed-time", "data"),
-    Output("remaining-time", "data"),
-    Input("interval-component", "n_intervals"),
-    State("switch", "value"),
-    prevent_initial_call=True,
-)
-def updateGraphLive(
-    n: int, switch_on: bool
-) -> tuple[
-    int | dash._callback.NoUpdate,
-    Patch | dash._callback.NoUpdate,
-    bool | dash._callback.NoUpdate,
-    float | dash._callback.NoUpdate,
-    float | dash._callback.NoUpdate,
-    float | dash._callback.NoUpdate,
-    float | dash._callback.NoUpdate,
-]:
-    """Method that is called in periodic intervals.
-
-    Parameters
-    ----------
-    n : int
-        The iteration of the update interval.
-    switch_on : bool
-        Boolean indicating if the light mode theme is switched on.
-
-    Returns
-    -------
-    tuple[int, dash.Patch, bool, float, float, float, float]
-        Integer for the current value of the progress bar, the patch for the figure object and the boolean indicating if the interval-component is to be disabled, current kinetic energy value of the measurement, current binding energy value of the measurement, the elapsed time of the measurement, the remaining time of the measurement, respectively.
-    """
-
-    if not data_backend.dash_patch_accessed:
-        patched_figure = data_backend.readAndUpdateDashPatch(True)
-        template = BOOTSTRAP if switch_on else BOOTSTRAP_DARK
-        patched_figure["layout"]["template"] = template
-
-        return (
-            data_backend.current_progress,
-            patched_figure,
-            not data_backend.meas_running,
-            data_backend.current_kinetic_energy,
-            data_backend.current_binding_energy,
-            data_backend.elapsed_time,
-            data_backend.remaining_time,
-        )
-    else:
-        return no_update, no_update, no_update, no_update, no_update, no_update, no_update
 
 
 clientside_callback(
@@ -2688,7 +2999,7 @@ clientside_callback(
         allow_duplicate=True,
     ),
     Input("confirm-save", "n_clicks"),
-    Input("progress-interval", "disabled"),
+    Input("check-running", "data"),
     State("graph", "figure"),
     State("save-as-file", "value"),
     State("save-on-complete-switch", "value"),
@@ -2697,7 +3008,7 @@ clientside_callback(
 )
 def saveDataAndPlot(
     n_clicks: int,
-    interval_disabled: bool,
+    meas_running: bool,
     ex_fig: dict,
     filename: str,
     save_on_complete_switch: bool,
@@ -2709,7 +3020,7 @@ def saveDataAndPlot(
     ----------
     n_clicks : int
         Integer indicating the number of times the save-results button was clicked.
-    interval_disabled : bool
+    meas_running : bool
         Boolean indicating if the start button is disabled. If it is disabled, the measurement is running.
     ex_fig : dict
         The dictionary with the figure object of the graph area in the Dash app.
@@ -2726,8 +3037,8 @@ def saveDataAndPlot(
         The boolean to close the Modal.
     """
     input_context = ctx.triggered_id
-    if input_context == "progress-interval":
-        if save_on_complete_switch and interval_disabled:
+    if input_context == "check-running":
+        if save_on_complete_switch and not meas_running:
             if data_backend.meas_interrupt_id == "stop-click":
                 data_backend.meas_interrupt_id = ""
                 return no_update
@@ -2738,7 +3049,10 @@ def saveDataAndPlot(
                 include_plotlyjs="cdn",
                 include_mathjax="cdn",
             )
-            data_backend.saveMeasurementData(save_on_complete_filename)
+            # data_backend.saveMeasurementData(save_on_complete_filename)
+            table_to_save = pl.DataFrame(cache.get("data_table"))
+            print(table_to_save)
+            table_to_save.write_csv(save_on_complete_filename + ".csv")
         return no_update
     else:
         old_fig = go.Figure(ex_fig)
@@ -2748,7 +3062,8 @@ def saveDataAndPlot(
             include_plotlyjs="cdn",
             include_mathjax="cdn",
         )
-        data_backend.saveMeasurementData(filename)
+        # data_backend.saveMeasurementData(filename)
+        data_backend.data_table.write_csv(filename + ".csv")
         return False
 
 
