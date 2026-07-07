@@ -2115,6 +2115,9 @@ def cancelOrStopMeasurement(n: int) -> None:
         Integer indicating the number of clicks of the stop-click button.
 
     """
+    cache.set("interrupt_id", "stop-click")
+    cache.set("meas_interrupted", True)
+    cache.set("meas_running", False)
     data_backend.meas_interrupt_id = "stop-click"
     data_backend.interruptionClicked()
 
@@ -2314,7 +2317,7 @@ def measurementLongCallback(
             start_time = time.time()
             __refresh_time = 0
             while __refresh_time <= time_per_step:
-                if data_backend.meas_interrupted:
+                if cache.get("meas_interrupted"):
                     break
                 time.sleep(0.25)
                 __refresh_time += 0.25
@@ -2325,10 +2328,10 @@ def measurementLongCallback(
                 #     time.sleep(time_per_step - __refresh_time)
                 #     break
 
-            if data_backend.meas_interrupted:
-                data_backend.meas_interrupted = False
-                data_backend.meas_completed = True
-                data_backend.meas_running = False
+            if cache.get("meas_interrupted"):
+                cache.set("meas_interrupted", False)
+                cache.set("meas_completed", True)
+                cache.set("meas_running", False)
                 data_backend.current_progress = 100
                 set_progress((
                     temp_patch,
@@ -3040,8 +3043,8 @@ def saveDataAndPlot(
     table_to_save = pl.DataFrame(cache.get("data_table"))
     if input_context == "check-running":
         if save_on_complete_switch and not meas_running:
-            if data_backend.meas_interrupt_id == "stop-click":
-                data_backend.meas_interrupt_id = ""
+            if cache.set("interrupt_id", "stop-click") == "stop-click":
+                cache.set("interrupt_id", "")
                 return no_update
             old_fig = go.Figure(ex_fig)
             old_fig.write_html(
