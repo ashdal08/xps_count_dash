@@ -3037,6 +3037,7 @@ def saveDataAndPlot(
         The boolean to close the Modal.
     """
     input_context = ctx.triggered_id
+    table_to_save = pl.DataFrame(cache.get("data_table"))
     if input_context == "check-running":
         if save_on_complete_switch and not meas_running:
             if data_backend.meas_interrupt_id == "stop-click":
@@ -3050,8 +3051,6 @@ def saveDataAndPlot(
                 include_mathjax="cdn",
             )
             # data_backend.saveMeasurementData(save_on_complete_filename)
-            table_to_save = pl.DataFrame(cache.get("data_table"))
-            print(table_to_save)
             table_to_save.write_csv(save_on_complete_filename + ".csv")
         return no_update
     else:
@@ -3063,7 +3062,7 @@ def saveDataAndPlot(
             include_mathjax="cdn",
         )
         # data_backend.saveMeasurementData(filename)
-        data_backend.data_table.write_csv(filename + ".csv")
+        table_to_save.write_csv(filename + ".csv")
         return False
 
 
