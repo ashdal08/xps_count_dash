@@ -2118,8 +2118,11 @@ def cancelOrStopMeasurement(n: int) -> None:
     cache.set("meas_interrupt_id", "stop-click")
     cache.set("meas_interrupted", True)
     cache.set("meas_running", False)
-    data_backend.meas_interrupt_id = "stop-click"
-    data_backend.interruptionClicked()
+    set_props("check-running", {"data": False})
+    set_props("current-progress", {"data": 100})
+    set_props("remaining-time", {"data": 0.0})
+    # data_backend.meas_interrupt_id = "stop-click"
+    # data_backend.interruptionClicked()
 
 
 # ***********************************************************************************
@@ -2318,6 +2321,7 @@ def measurementLongCallback(
             __refresh_time = 0
             while __refresh_time <= time_per_step:
                 if cache.get("meas_interrupted"):
+                    data_backend.meas_interrupt_id = "stop-click"
                     data_backend.meas_interrupted = True
                     data_backend.meas_running = False
                     break
@@ -2338,16 +2342,15 @@ def measurementLongCallback(
                 data_backend.meas_completed = True
                 data_backend.meas_running = False
                 data_backend.current_progress = 100
-                set_progress((
-                    temp_patch,
-                    100,
-                    no_update,
-                    no_update,
-                    no_update,
-                    0.0,
-                    False,
-                ))
-                time.sleep(2)
+                # set_progress((
+                #     temp_patch,
+                #     100,
+                #     no_update,
+                #     no_update,
+                #     no_update,
+                #     0.0,
+                #     False,
+                # ))
                 return
             counts = data_backend.u6_labjack.getFeedback(u6.Counter0(False))[0]
             time_taken = time.time() - start_time  # record in s
