@@ -2115,7 +2115,7 @@ def cancelOrStopMeasurement(n: int) -> None:
         Integer indicating the number of clicks of the stop-click button.
 
     """
-    cache.set("interrupt_id", "stop-click")
+    cache.set("meas_interrupt_id", "stop-click")
     cache.set("meas_interrupted", True)
     cache.set("meas_running", False)
     data_backend.meas_interrupt_id = "stop-click"
@@ -2318,6 +2318,8 @@ def measurementLongCallback(
             __refresh_time = 0
             while __refresh_time <= time_per_step:
                 if cache.get("meas_interrupted"):
+                    data_backend.meas_interrupted = True
+                    data_backend.meas_running = False
                     break
                 time.sleep(0.25)
                 __refresh_time += 0.25
@@ -2332,6 +2334,9 @@ def measurementLongCallback(
                 cache.set("meas_interrupted", False)
                 cache.set("meas_completed", True)
                 cache.set("meas_running", False)
+                data_backend.meas_interrupted = False
+                data_backend.meas_completed = True
+                data_backend.meas_running = False
                 data_backend.current_progress = 100
                 set_progress((
                     temp_patch,
@@ -2478,7 +2483,7 @@ def measurementLongCallback(
         temp_patch = fig_patch
         batch_dataframe = batch_dataframe.dropna()
         for row_index in range(0, len(batch_dataframe)):
-            if data_backend.meas_running:
+            if cache.get("meas_running"):
                 start_ev = batch_dataframe["Start [eV]"][row_index]
                 if math.isnan(start_ev):
                     break
@@ -2510,6 +2515,8 @@ def measurementLongCallback(
         # set_props("remaining-time", {"data": data_backend.remaining_time})
         data_backend.meas_running = False
         data_backend.meas_completed = True
+        cache.set("meas_running", False)
+        cache.set("meas_completed", True)
         data_backend.batch_pass_no = 1
         data_backend.batch_step_no = 0
 
@@ -2586,6 +2593,10 @@ def measurementLongCallback(
     data_backend.meas_running = True
     data_backend.meas_completed = False
     data_backend.meas_interrupted = False
+
+    cache.set("meas_interrupted", False)
+    cache.set("meas_running", True)
+    cache.set("meas_completed", False)
 
     if batch_mode:
         runBatchMeasurement(temp_patch_2, pd.DataFrame(batch_dataframe))
@@ -3043,8 +3054,8 @@ def saveDataAndPlot(
     table_to_save = pl.DataFrame(cache.get("data_table"))
     if input_context == "check-running":
         if save_on_complete_switch and not meas_running:
-            if cache.set("interrupt_id", "stop-click") == "stop-click":
-                cache.set("interrupt_id", "")
+            if cache.get("meas_interrupt_id") == "stop-click":
+                cache.set("meas_interrupt_id", "")
                 return no_update
             old_fig = go.Figure(ex_fig)
             old_fig.write_html(
