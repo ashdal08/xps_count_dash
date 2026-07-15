@@ -130,6 +130,9 @@ class U6:
             self.__counter_thread.start()
         pass
 
+    def close(self):
+        pass
+
     def getAIN(self, positiveChannel: int, resolutionIndex=0, gainIndex=0, settlingFactor=0, differential=False):
         if positiveChannel == 3:
             return 3 + (random.random() - 0.5) * 0.01

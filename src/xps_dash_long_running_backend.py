@@ -44,6 +44,11 @@ load_figure_template(["bootstrap", "bootstrap_dark"])  # type: ignore
 BOOTSTRAP = pio.templates["bootstrap"]
 BOOTSTRAP_DARK = pio.templates["bootstrap_dark"]
 
+EXCITATION_AL = 1486.6
+"""The excitation energy for Aluminium cathode."""
+EXCITATION_MG = 1253.6
+"""The excitation energy for Magnesium cathode."""
+
 LAYOUT = {
     "autosize": True,
     "margin": {
@@ -540,6 +545,11 @@ class DataBackend:
         # ljud.eDAC(self.u6_labjack, 1, 3)  # Set the reference voltage for the MAX5216 DAC
         self.u6_labjack.getFeedback(u6.DAC1_16(self.u6_labjack.voltageToDACBits(3, 1, True)))
         self.labjack_connect = True
+
+    def disconnectLabjack(self) -> None:
+        """Disconnect the Labjack U6 device."""
+        self.u6_labjack.close()
+        self.labjack_connect = False
 
     def readAndUpdateDashPatch(self, read_patch: bool = False, new_patch: Patch = Patch()) -> Patch:
         """Read or update the dash patch. Toggling the dash_patch_accessed if the dash patch value is read.
@@ -1049,7 +1059,7 @@ class DataBackend:
         os._exit(0)
 
 
-data_backend = DataBackend()
+data_backend_global = DataBackend()
 """The data processing backend class."""
 
 fig, not_used = reset_fig()
@@ -2121,8 +2131,6 @@ def cancelOrStopMeasurement(n: int) -> None:
     set_props("check-running", {"data": False})
     set_props("current-progress", {"data": 100})
     set_props("remaining-time", {"data": 0.0})
-    # data_backend.meas_interrupt_id = "stop-click"
-    # data_backend.interruptionClicked()
 
 
 # ***********************************************************************************
@@ -2213,6 +2221,9 @@ def startMeasurement(
         return True, True, False, 1000, fig
 
 
+# ******************************************************************************
+
+
 @callback(
     Input("batch-measurement-store", "data"),
     State("start-ev-value", "data"),
@@ -2249,11 +2260,28 @@ def measurementLongCallback(
 
     Parameters
     ----------
-
-    triggered : bool
-        Boolean indicating if the single measurement store was triggered to run a single measurement.
+    set_progress : callable
+        Function to update the progress of the measurement.
+    batch_mode : bool
+        Boolean indicating if the measurement is in batch mode.
+    start_ev : float
+        The starting energy value for the measurement.
+    end_ev : float
+        The ending energy value for the measurement.
+    step_ev : float
+        The step width for the measurement.
+    time_per_step : float
+        The time per step for the measurement.
+    pass_no : int
+        The number of passes for the measurement.
+    batch_sett : dict
+        The settings for the batch measurement.
+    source_mg : bool
+        Boolean indicating if the source is Mg.
 
     """
+    data_backend_global.disconnectLabjack()
+    data_backend = DataBackend()
 
     def runSingleMeasurement(
         fig_patch: Patch,
@@ -2270,7 +2298,7 @@ def measurementLongCallback(
 
         Parameters
         ----------
-        temp_patch : dash.Patch
+        fig_patch : dash.Patch
             The dash Patch object to be sent to the graph division of the app.
         start_ev : float
             The starting energy value for the measurement in eV.
@@ -2290,8 +2318,10 @@ def measurementLongCallback(
             The type of measurement. True for batch measurement, False for single measurement, by default False.
 
         """
+
         temp_patch = fig_patch
         data_backend.setSpiVoltage(data_backend.bindingEnergyToVolt(round(start_ev, 3)))
+
 
         pass_index = 1
 
@@ -2342,6 +2372,7 @@ def measurementLongCallback(
                 data_backend.meas_completed = True
                 data_backend.meas_running = False
                 data_backend.current_progress = 100
+
                 # set_progress((
                 #     temp_patch,
                 #     100,
@@ -2351,11 +2382,17 @@ def measurementLongCallback(
                 #     0.0,
                 #     False,
                 # ))
+                data_backend.disconnectLabjack()
+                data_backend_global.connectLabjack()
+
                 return
             counts = data_backend.u6_labjack.getFeedback(u6.Counter0(False))[0]
+
             time_taken = time.time() - start_time  # record in s
             binding_energy = data_backend.setpoint_ev
             counts_per_milli = round(counts / (time_taken * 1000), 6)
+
+
             real_kin_energy = round(
                 data_backend.u6_labjack.getAIN(6, differential=True) * 5000 / 10, 6
             )  # real kinetic energy being scanned from the HAC 5000 external metering. 0-5000 eV <=> 0-10 V
@@ -2472,6 +2509,8 @@ def measurementLongCallback(
             # set_props("remaining-time", {"data": data_backend.remaining_time})
             data_backend.meas_completed = True
             data_backend.meas_running = False
+            data_backend.disconnectLabjack()
+            data_backend_global.connectLabjack()
 
     def runBatchMeasurement(fig_patch: Patch, batch_dataframe: pd.DataFrame) -> None:
         """Run a batch measurement.
@@ -2522,15 +2561,19 @@ def measurementLongCallback(
         cache.set("meas_completed", True)
         data_backend.batch_pass_no = 1
         data_backend.batch_step_no = 0
+        data_backend.disconnectLabjack()
+        data_backend_global.connectLabjack()
 
     data_backend.total_steps = 0
     data_backend.total_batch_passes = 0
     data_backend.batch_pass_no = 1
     data_backend.batch_step_no = 1
+
     if source_mg:
-        data_backend.excitation_voltage = data_backend.EXCITATION_MG
+        data_backend.excitation_voltage = EXCITATION_MG
     else:
-        data_backend.excitation_voltage = data_backend.EXCITATION_AL
+        data_backend.excitation_voltage = EXCITATION_AL
+
 
     if batch_mode:
         # if Batch Scan tab is selected in the UI. Batch scan mode is 1. Single scan mode is 0.
@@ -2605,6 +2648,7 @@ def measurementLongCallback(
         runBatchMeasurement(temp_patch_2, pd.DataFrame(batch_dataframe))
     else:
         runSingleMeasurement(temp_patch_2, start_ev, end_ev, step_ev, time_per_step, pass_no, 0, 0, False)
+
 
 # ********************************************************************************
 
@@ -2773,12 +2817,12 @@ def updateProgress(n: int, interval_disabled: bool) -> bool | dash._callback.NoU
     """
 
     if interval_disabled:
-        if data_backend.meas_running:
+        if data_backend_global.meas_running:
             return not interval_disabled
         else:
             return no_update
     else:
-        if data_backend.meas_running:
+        if data_backend_global.meas_running:
             return no_update
         else:
             return not interval_disabled
@@ -3172,21 +3216,21 @@ def updateXraySourceHVandCurrent(
         The present high voltage of the X-ray source and the current in mA, change the boolean state of the command-clicked store element, change the boolean state of the inhibit-clicked store element, and change the disabled state of the inhibit button.
     """
     if source_inhibit_clicked:
-        if data_backend.sl600_inhibited:
-            data_backend.sl600Inhibit(False)
+        if data_backend_global.sl600_inhibited:
+            data_backend_global.sl600Inhibit(False)
         else:
-            data_backend.sl600Inhibit(True)
+            data_backend_global.sl600Inhibit(True)
 
         return no_update, no_update, no_update, False, no_update
     if send_command_clicked:
         if filament_2:
-            data_backend.sendTx400RemoteSignal(1, emission, current_value)
+            data_backend_global.sendTx400RemoteSignal(1, emission, current_value)
         else:
-            data_backend.sendTx400RemoteSignal(0, emission, current_value)
+            data_backend_global.sendTx400RemoteSignal(0, emission, current_value)
 
         return no_update, no_update, False, no_update, no_update
 
-    hv, current = data_backend.sl600GetParams()
+    hv, current = data_backend_global.sl600GetParams()
 
     return hv, current, no_update, no_update, True if current > 0.28 else False
 
@@ -3305,7 +3349,7 @@ def inhibitXrayHV(n: int) -> tuple[bool, str, str, bool]:
     tuple[bool, str, str, bool]
         Returns a tuple with a boolean indicating if the Remote send button is disabled, a string indicating the color of the Inhibit button, text to be shown on the Inhibit button, and a boolean to store in the inhibit-clicked store element.
     """
-    if data_backend.sl600_inhibited:
+    if data_backend_global.sl600_inhibited:
         return False, "danger", "Inhibit HV", True
     else:
         return True, "success", "HV Inhibited", True
@@ -3327,7 +3371,7 @@ def shutdownApp(n: int) -> None:
         Integer indicating the number of times the shutdown-app button was clicked.
 
     """
-    data_backend.onClose()
+    data_backend_global.onClose()
 
 
 # *********************************************************************************
