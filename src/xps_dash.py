@@ -2217,7 +2217,7 @@ def startMeasurement(
 # ********************************************************************************
 
 clientside_callback(
-    ClientsideFunction("clientside", "check_running_progress"),
+    ClientsideFunction("clientside", "check_running_progress_2"),
     Output(
         "start-click",
         "disabled",
@@ -2395,7 +2395,7 @@ def updateProgress(n: int, interval_disabled: bool) -> bool | dash._callback.NoU
 # ********************************************************************************
 
 clientside_callback(
-    ClientsideFunction("clientside", "wind_up_after_measurement"),
+    ClientsideFunction("clientside", "wind_up_after_measurement_2"),
     Output("progress-bar", "striped"),
     Output("progress-bar", "animated"),
     Input("progress-interval", "disabled"),

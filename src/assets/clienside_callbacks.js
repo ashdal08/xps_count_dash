@@ -10,6 +10,17 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     save_on_complete_toggled: (switchOn) => {
       return [!switchOn, switchOn];
     },
+        check_running_progress_2: (notRunning, saveFilenameSwitch) => {
+      if (!notRunning) {
+        return [
+          true, false, true, "mb-3 card-disable", true, true, true, true, true
+        ];
+      } else {
+        return [
+          false, true, false, "mb-3", false, false, false, !saveFilenameSwitch, false
+        ];
+      }
+    },
     check_running_progress: (running, saveFilenameSwitch) => {
       if (running) {
         return [
@@ -23,6 +34,9 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     },
     wind_up_after_measurement: (notRunning) => {
       return [notRunning, notRunning];
+    },
+    wind_up_after_measurement_2: (intervalDisabled) => {
+      return [!intervalDisabled, !intervalDisabled];
     },
     update_display_values: (
       currentKineticEnergy,

@@ -38,6 +38,7 @@ from gevent.pywsgi import WSGIServer
 
 # import u6
 from dependencies import dummy_labjack_u6 as u6
+import LabJackPython as ljm
 
 load_figure_template(["bootstrap", "bootstrap_dark"])  # type: ignore
 
@@ -549,6 +550,7 @@ class DataBackend:
     def disconnectLabjack(self) -> None:
         """Disconnect the Labjack U6 device."""
         self.u6_labjack.close()
+        ljm.Close()
         self.labjack_connect = False
 
     def readAndUpdateDashPatch(self, read_patch: bool = False, new_patch: Patch = Patch()) -> Patch:
